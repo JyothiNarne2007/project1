@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>View Mid Marks - EAdmin</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h2 class="text-center">View Mid Marks - EAdmin</h2>
+
+      {% if errors %}
+      <div class="alert alert-danger mt-3">
+        <ul>
+          {% for error in errors %}
+          <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %} {% if error_view_mid_marks %}
+      <div style="color: red; border: 1px solid red; padding: 10px">
+        <strong>Error:</strong> {{ error_view_mid_marks }}
+      </div>
+      {% endif %} {% if data %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Roll Number</th>
+            <th>Name</th>
+            <th>Subjects</th>
+            <th>CIE1</th>
+            <th>CIE2</th>
+            <th>Average</th>
+            <th>Assignment</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in data %}
+          <tr>
+            <td>{{ row['roll_number'] }}</td>
+            <td>{{ row['name'] }}</td>
+            <td>
+              {% set subjects = row['subjects'].split(';') %} {% for subject in
+              subjects %}
+              <p>{{ subject }}</p>
+              {% endfor %}
+            </td>
+            <td>{{ row['cie1'] }}</td>
+            <td>{{ row['cie2'] }}</td>
+            <td>{{ row['avg'] }}</td>
+            <td>{{ row['assignment'] }}</td>
+            <td>{{ row['total'] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+    </div>
+  </body>
+</html>

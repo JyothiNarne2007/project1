@@ -1,0 +1,358 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Equal Width Headers</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.0/dist/sweetalert2.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+      <style>
+          body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        margin-left :220px;
+        margin-top :165px;
+      }
+          table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+      </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-content">
+        <div class="white-header">
+          <img src="/static/logo.png" alt="Alverno College Logo" class="logo" />
+          <h2>
+            <b>GOKARAJU LAILAVATHI<br />ENGINEERING COLLEGE</b>
+          </h2>
+        </div>
+        <div class="header-text">
+          <div class="red-header"></div>
+          <div class="green-header">
+            <nav>
+              <a href="{{ url_for('admin') }}" class="tab1">Home</a>
+              <a href="{{ url_for('admin_student') }}" class="tab1">Student</a>
+              <a href="{{ url_for('admin_faculty') }}" class="tab1 active">Faculty</a>
+              <a href="{{ url_for('manage_notifications') }}" class="icon-button">
+                <span class="material-icons">notifications</span>
+              </a>
+              <form
+              action="http://127.0.0.1:5000/logout"
+              method="POST"
+              style="display: inline"
+            >
+              <button type="submit" class="apply-now">Logout</button>
+            </form>
+            </nav>
+
+          </div>
+        </div>
+      </div><div class="rheader">
+      <h3><b>Super Admin Dashboard</b></h3>
+    </div>
+
+    </header>
+
+    <div class="sidebar">
+        <div class="tabs">
+            <div class="tab active" data-tab="faculty_users_update" onclick="resetScroll(); openTab('faculty_users_update');">
+                Update Faculty
+            </div>
+            <div class="tab" data-tab="add_department" onclick="resetScroll(); openTab('add_department'); window.location.href='{{ url_for('add_department') }}';">
+                Departments
+            </div>
+        </div>
+    </div>
+    
+    <br><br>
+
+    <div class="main-content">
+    <!-- Faculty Update Section -->
+    <div id="faculty_users_update" class="tab-content active">
+        <div class="section">
+            <h2>Update Faculty Details</h2>
+            <form action="/faculty_users_update" method="POST">
+                <input type="hidden" name="active_tab" value="faculty_users_update">
+                <label for="faculty_id">Enter Faculty ID:</label>
+                <input type="text" id="faculty_id" name="faculty_id" placeholder="Faculty ID" required>
+                <button type="submit">Search</button>
+            </form>
+
+            {% if error %}
+<div id="error-message" style="color: red; border: 1px solid red; padding: 10px;">
+    <strong>Error:</strong> {{ error }}
+</div>
+{% endif %}
+
+{% if success %}
+<div id="success-message" style="color: green; border: 1px solid green; padding: 10px;">
+    <strong>Success:</strong> {{ success }}
+</div>
+{% endif %}
+
+            {% if faculty %}
+            <hr>
+            <h2>Update Faculty Details</h2>
+            <form action="/update_faculty" method="POST">
+                <label for="faculty_id">Faculty ID:</label>
+                <input type="text" id="faculty_id" name="faculty_id" value="{{ faculty['faculty_id'] }}" readonly required>
+
+        <label for="first_name">First Name:</label>
+        <input type="text" id="first_name" name="first_name" value="{{ faculty['first_name'] }}" required>
+
+        <label for="last_name">Last Name:</label>
+        <input type="text" id="last_name" name="last_name" value="{{ faculty['last_name'] }}" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ faculty['email'] }}" required>
+
+        <label for="phone_number">Phone Number:</label>
+        <input type="text" id="phone_number" name="phone_number" value="{{ faculty['phone_number'] }}" required>
+
+        <label for="department_id">Department:</label>
+<select id="department_id" name="department_id" required>
+    {% for department in departments %}
+        <option value="{{ department['department_id'] }}" {% if department['department_id'] == faculty['department_id'] %}selected{% endif %}>
+            {{ department['department_name'] }}
+        </option>
+    {% endfor %}
+</select>
+
+        <label for="designation">Designation:</label>
+        <input type="text" id="designation" name="designation" value="{{ faculty['designation'] }}" required>
+
+        <label for="joining_date">Joining Date:</label>
+        <input type="date" id="joining_date" name="joining_date" value="{{ faculty['joining_date'] }}" required>
+
+        <label for="salary">Salary:</label>
+        <input type="text" id="salary" name="salary" value="{{ faculty['salary'] }}" required>
+
+        <label for="select-roles">Select Roles:</label>
+        <label>
+            <input type="checkbox" name="roles[]" value="hod" {% if 'hod' in faculty['roles'] %}checked{% endif %} />
+            HOD
+        </label>
+        <label>
+            <input type="checkbox" name="roles[]" value="e-admin" {% if 'e-admin' in faculty['roles'] %}checked{% endif %} />
+            E-Admin
+        </label>
+        <label>
+            <input type="checkbox" name="roles[]" value="faculty" {% if 'faculty' in faculty['roles'] %}checked{% endif %} />
+            Faculty
+        </label>
+
+        <label for="status">Status:</label>
+        <select id="status" name="status" required>
+            <option value="active" {% if faculty['status'] == 'active' %}selected{% endif %}>Active</option>
+            <option value="inactive" {% if faculty['status'] == 'inactive' %}selected{% endif %}>Inactive</option>
+        </select>
+        <br>
+
+        <button type="submit">Update Faculty</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+<div id="add_department" class="tab-content ">
+  <div class="section">
+      <h2>Add New Department</h2>
+      <form action="/add_department" method="POST">
+          <label for="department_id">Department ID (3 digits):</label>
+          <input type="text" id="department_id" name="department_id" placeholder="Enter Department ID" required>
+          <br><br>
+
+          <label for="department_name">Department Name:</label>
+          <input type="text" id="department_name" name="department_name" placeholder="Enter Department Name" required>
+          <br><br>
+
+
+          <button type="submit">Add Department</button>
+      </form>
+
+      {% if error_create_department %}
+      <div id="error-message" style="color: red; border: 1px solid red; padding: 10px;">
+          <strong>Error:</strong> {{ error_create_department }}
+      </div>
+      {% endif %}
+
+      {% if success_create_department %}
+      <div id="success-message" style="color: green; border: 1px solid green; padding: 10px;">
+          <strong>Success:</strong> {{ success_create_department }}
+      </div>
+      {% endif %}
+
+      <h2>Existing Departments</h2>
+      {% if departments %}
+      <table>
+          <thead>
+              <tr>
+                  <th>Department ID</th>
+                  <th>Department Name</th>
+                  <th>Department Head</th>
+                  <th>Actions</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for department in departments %}
+              <tr>
+                  <td>{{ department['department_id'] }}</td>
+                  <td>{{ department['department_name'] }}</td>
+                  <td>{{ department['department_head'] or 'Not Assigned' }}</td>
+                  <td>
+                      <form action="/delete_department" method="POST" onsubmit="return confirmDeletion();">
+                  <input type="hidden" name="department_id" value="{{ department['department_id'] }}">
+                  <button type="submit" style="color: white;">Delete</button>
+              </form>
+                  </td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+      {% else %}
+      <p>No departments found.</p>
+      {% endif %}
+  </div>
+</div>
+
+</div>
+
+<footer>
+    <p>© Copyright 2025 - All Rights Reserved www.glwec.in</p>
+  </footer>
+
+
+
+    <script>
+
+         document.addEventListener('DOMContentLoaded', function() {
+        // Check if the faculty object is defined
+        const facultyName = "{{ faculty['first_name'] if faculty else '' }} {{ faculty['last_name'] if faculty else '' }}";
+
+        const hodCheckbox = document.querySelector('input[name="roles[]"][value="hod"]');
+
+        if (hodCheckbox) {
+            hodCheckbox.addEventListener('change', function() {
+                if (facultyName) { // Check if facultyName is available
+                    const departmentId = "{{ faculty['department_id'] if faculty else '' }}";
+
+                    if (hodCheckbox.checked) {
+                        const confirmationMessage = "Are you sure you want to assign " + facultyName + " as the new HOD?";
+                        if (!confirm(confirmationMessage)) {
+                            hodCheckbox.checked = false;  // If the user cancels, uncheck the checkbox
+                        }
+                    } else {
+                        const removalMessage = "Are you sure you want to remove " + facultyName + " as the HOD? This will leave the department without a head.";
+                        if (!confirm(removalMessage)) {
+                            hodCheckbox.checked = true;  // If the user cancels, recheck the checkbox
+                        }
+                    }
+                }
+            });
+        }
+    });
+
+      function hideMessages() {
+        // Hide success and error messages when clicked anywhere
+        document.body.addEventListener('click', function(event) {
+            // Check if the click is not on the success/error messages themselves
+            if (!event.target.closest('#success-message') && !event.target.closest('#error-message')) {
+                var successMessage = document.getElementById('success-message');
+                var errorMessage = document.getElementById('error-message');
+
+                if (successMessage) {
+                    successMessage.style.display = 'none';
+                }
+                if (errorMessage) {
+                    errorMessage.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    // Call the hideMessages function when the page loads
+    window.onload = hideMessages;
+
+        const activeTab = "{{ active_tab }}";
+  if (activeTab) {
+    openTab(activeTab);
+  }
+        // Save the active tab before form submission
+        document.addEventListener("DOMContentLoaded", function () {
+            const forms = document.querySelectorAll("form");
+            forms.forEach((form) => {
+                form.addEventListener("submit", function () {
+                    const activeTab = document.querySelector(".tab.active");
+                    if (activeTab) {
+                        const hiddenTabInput = form.querySelector("input[name='active_tab']");
+                        if (hiddenTabInput) {
+                            hiddenTabInput.value = activeTab.getAttribute("data-tab");
+                        }
+                    }
+                });
+            });
+
+            // Restore the active tab on page load
+            const activeTabValue = "{{ active_tab }}";
+            if (activeTabValue) {
+                const tabs = document.querySelectorAll(".tab");
+                const tabContents = document.querySelectorAll(".tab-content");
+
+                tabs.forEach((tab) => tab.classList.remove("active"));
+                tabContents.forEach((content) => content.classList.remove("active"));
+
+                const activeTabElement = document.querySelector(`.tab[data-tab='${activeTabValue}']`);
+                const activeTabContent = document.getElementById(activeTabValue);
+
+                if (activeTabElement) activeTabElement.classList.add("active");
+                if (activeTabContent) activeTabContent.classList.add("active");
+            }
+        });
+
+        function openTab(tabName) {
+            const tabs = document.querySelectorAll(".tab");
+            const tabContents = document.querySelectorAll(".tab-content");
+
+            tabs.forEach((tab) => tab.classList.remove("active"));
+            tabContents.forEach((content) => content.classList.remove("active"));
+
+            const activeTab = document.querySelector(`.tab[data-tab='${tabName}']`);
+            const activeContent = document.getElementById(tabName);
+
+            if (activeTab) activeTab.classList.add("active");
+            if (activeContent) activeContent.classList.add("active");
+        }
+        function confirmDeletion() {
+            return confirm('Are you sure you want to delete this department?');
+        }
+
+
+
+
+
+        function resetScroll() {
+    window.scrollTo(0, 0);
+}
+
+    </script>
+  </body>
+</html>

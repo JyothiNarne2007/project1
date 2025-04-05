@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Year & Semester Results</title>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+      th,
+      td {
+        padding: 8px;
+        text-align: center;
+      }
+      th {
+        background-color: #f4f4f4;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Results for Year {{ year }} and Semester {{ semester }}</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Roll Number</th>
+          {% for subject in subject_list %}
+          <th>{{ subject }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for roll_number, student in student_data.items() %}
+        <tr>
+          <td>{{ roll_number }}</td>
+          {% for subject in subject_list %}
+          <td>
+            {% if subject in student.subjects %} {{ student.subjects[subject] if
+            student.subjects[subject] is not none else 'N/A' }} {% else %} 'N/A'
+            {% endif %}
+          </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Results</title>
+    <style>
+      /* General Body Styling */
+      body {
+        font-family: "Arial", sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f4f8;
+      }
+
+      /* Header Styling */
+      h2 {
+        color: #444;
+        text-align: center;
+        padding: 5px 0;
+        background-color: #8b1b29;
+        color: white;
+        margin: 0;
+      }
+
+      /* Error and Success Messages */
+      .message {
+        padding: 15px;
+        margin: 20px auto;
+        width: 80%;
+        border-radius: 5px;
+        font-weight: bold;
+        text-align: center;
+        font-size: 16px;
+      }
+      .error {
+        background-color: #f8d7da;
+        color: #842029;
+        border: 1px solid #f5c2c7;
+      }
+      .success {
+        background-color: #d1e7dd;
+        color: #0f5132;
+        border: 1px solid #badbcc;
+      }
+
+      /* Table Styling */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px auto;
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      table,
+      th,
+      td {
+        border: 1px solid #ddd;
+      }
+      th,
+      td {
+        padding: 12px;
+        text-align: center;
+        font-size: 14px;
+      }
+      th {
+        background-color: #8b1b29;
+        color: white;
+      }
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+      tr:nth-child(odd) {
+        background-color: #e9ecef;
+      }
+      tr:hover {
+        background-color: #d1e7dd;
+      }
+
+      /* Button Styling */
+      button {
+        display: block;
+        margin: 20px auto;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+      }
+      button:hover {
+        background-color: #218838;
+      }
+
+      /* Form Styling */
+      form {
+        margin: 0 auto;
+        width: 90%;
+      }
+      /* Back Button Styling */
+      .back-button {
+        position: absolute;
+        top: 25px;
+        right: 10px;
+        background-color: #8b1b29;
+        color: white;
+        padding: 8px 16px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      .back-button:hover {
+        background-color: #ff5b5b;
+      }
+      .welcome-text {
+        text-decoration: none;
+        color: white;
+        font-weight: bold;
+        font-size: 18px;
+        margin: 0; /* Remove any default margins */
+        white-space: nowrap; /* Prevent the text from breaking into multiple lines */
+      }
+
+      /* Back Button Styling */
+    </style>
+  </head>
+  <body>
+    <!-- Display Messages -->
+    {% if error %}
+    <div class="message error">{{ error }}</div>
+    {% endif %} {% if success %}
+    <div class="message success">{{ success }}</div>
+    {% endif %}
+
+    <!-- Header -->
+    <h2>
+      Students in Year {{ passed_out_year }}, Branch {{ branch }}, Section {{
+      section }}
+      <div>
+        {% if session['faculty_name'] %}
+        <span class="welcome-text"
+          >Welcome, {{ session['faculty_name'] }}
+        </span>
+        {% endif %}
+        <a href="{{ url_for('teacher') }}" class="back-button">Back</a>
+      </div>
+    </h2>
+
+    <!-- Form and Table -->
+    <form action="{{ url_for('submit_marks') }}" method="POST">
+      <table>
+        <thead>
+          <tr>
+            <th>Roll Number</th>
+            <th>Student Name</th>
+            <th>CIE-I (Max 20)</th>
+            <th>CIE-II (Max 20)</th>
+            <th>Assignment (Max 10)</th>
+            <th>Average (Max 20)</th>
+            <th>Total (Max 30)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for student in students %}
+          <tr>
+            <td>{{ student['roll_number'] }}</td>
+            <td style="text-align: left">
+              {{ student['STUDENT NAME'] if student['STUDENT NAME'] else "N/A"
+              }}
+            </td>
+            <td>
+              <input type="number" name="cie1_{{ student['roll_number'] }}"
+              min="0" max="20" class="cie1" {% if access_dict.get('CIE1') !=
+              'ON' %} readonly {% endif %}>
+            </td>
+            <td>
+              <input type="number" name="cie2_{{ student['roll_number'] }}"
+              min="0" max="20" class="cie2" {% if access_dict.get('CIE2') !=
+              'ON' %} readonly {% endif %}>
+            </td>
+            <td>
+              <input type="number" name="assignment_{{ student['roll_number']
+              }}" min="0" max="10" class="assignment" {% if
+              access_dict.get('Assignment') != 'ON' %} readonly {% endif %}>
+            </td>
+            <td>
+              <input
+                type="number"
+                name="avg_{{ student['roll_number'] }}"
+                readonly
+                step="1"
+              />
+            </td>
+            <td>
+              <input
+                type="number"
+                name="total_{{ student['roll_number'] }}"
+                readonly
+                step="1"
+              />
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <button type="submit">Submit Marks</button>
+    </form>
+    <footer>
+      <p>© Copyright 2025 - All Rights Reserved www.glwec.in</p>
+    </footer>
+    <script>
+      document
+        .querySelectorAll('input[type="number"]')
+        .forEach(function (input) {
+          input.addEventListener("input", function () {
+            var row = input.closest("tr");
+            var cie1 =
+              parseInt(row.querySelector('input[name^="cie1"]').value) || 0;
+            var cie2 =
+              parseInt(row.querySelector('input[name^="cie2"]').value) || 0;
+            var assignment =
+              parseInt(row.querySelector('input[name^="assignment"]').value) ||
+              0;
+
+            // Calculate the average as (CIE-I + CIE-II) / 2
+            var avg = (cie1 + cie2) / 2;
+            // Always round up the average to the next whole number
+            avg = Math.ceil(avg);
+
+            // Calculate total as average + assignment
+            var total = avg + assignment;
+            // Always round up the total to the next whole number
+            total = Math.ceil(total);
+
+            // Update the fields for average and total with whole numbers
+            row.querySelector('input[name^="avg"]').value = avg;
+            row.querySelector('input[name^="total"]').value = total;
+          });
+        });
+    </script>
+  </body>
+</html>

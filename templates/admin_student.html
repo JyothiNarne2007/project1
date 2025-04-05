@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Equal Width Headers</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.0/dist/sweetalert2.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-content">
+        <div class="white-header">
+          <img src="/static/logo.png" alt="Alverno College Logo" class="logo" />
+          <h2>
+            <b>GOKARAJU LAILAVATHI<br />ENGINEERING COLLEGE</b>
+          </h2>
+        </div>
+        <div class="header-text">
+          <div class="red-header"></div>
+          <div class="green-header">
+            <nav>
+              <a href="{{ url_for('admin') }}" class="tab1">Home</a>
+              <a href="{{ url_for('admin_student') }}" class="tab1 active"
+                >Student</a
+              >
+              <a href="{{ url_for('admin_faculty') }}" class="tab1">Faculty</a>
+              <a
+                href="{{ url_for('manage_notifications') }}"
+                class="icon-button"
+              >
+                <span class="material-icons">notifications</span>
+              </a>
+              <form
+                action="http://127.0.0.1:5000/logout"
+                method="POST"
+                style="display: inline"
+              >
+                <button type="submit" class="apply-now">Logout</button>
+              </form>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <div class="rheader">
+        <h3><b>Super Admin Dashboard</b></h3>
+      </div>
+    </header>
+
+    <div class="sidebar">
+      <div class="tabs">
+        <div
+          class="tab active"
+          data-tab="upload_profile"
+          onclick="resetScroll(); openTab('upload_profile');"
+        >
+          Upload Profile
+        </div>
+        <div
+          class="tab"
+          data-tab="scrape_results"
+          onclick="resetScroll(); openTab('scrape_results');"
+        >
+          Scrape Results
+        </div>
+        <div
+          class="tab"
+          data-tab="upload_results"
+          onclick="resetScroll(); openTab('upload_results');"
+        >
+          Upload Results
+        </div>
+        <div
+          class="tab"
+          data-tab="download_results"
+          onclick="resetScroll(); openTab('download_results');"
+        >
+          Download Results
+        </div>
+        <div
+          class="tab"
+          data-tab="admin_profile"
+          onclick="resetScroll(); openTab('admin_profile');"
+        >
+          View Student
+        </div>
+        <div
+          class="tab"
+          data-tab="download_profile"
+          onclick="resetScroll(); openTab('download_profile');"
+        >
+          Download Profile
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <!-- Tab: Download Profile -->
+      <div id="download_profile" class="tab-content">
+        <div class="section">
+          <h2>Download Student Profiles</h2>
+          <form id="download-profile-form" method="POST" action="/download_profile">
+            <div class="form-group">
+              <label for="download_passed_out_year">Passed out Year:</label>
+              <select id="download_passed_out_year" name="passed_out_year" class="form-control" required>
+                <option value="" disabled selected>Select Year</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="download_branch_select">Branch:</label>
+              <select id="download_branch_select" name="branch" class="form-control" required>
+                <option value="" disabled selected>Select Branch</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="download_section_select">Section:</label>
+              <select id="download_section_select" name="section" class="form-control" required>
+                <option value="" disabled selected>Select Section</option>
+                <option value="ALL">ALL</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Download Profiles</button>
+          </form>
+
+          {% if error_download_profile %}
+          <div style="color: red; border: 1px solid red; padding: 10px">
+            <strong>Error:</strong> {{ error_download_profile }}
+          </div>
+          {% endif %}
+          {% if success_download_profile %}
+          <div style="color: green; border: 1px solid green; padding: 10px">
+            <strong>Success:</strong> {{ success_download_profile }}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Tab: View User -->
+      <div id="admin_profile" class="tab-content">
+        <div class="section">
+          <h2>View Student Profile</h2>
+          <form id="view-user-form" action="/admin_profile" method="POST">
+            <input
+              type="text"
+              name="roll_number"
+              placeholder="Enter Roll Number"
+              required
+            />
+            <button type="submit">View Student Profile</button>
+          </form>
+
+          {% if error_admin_profile %}
+          <div style="color: red; border: 1px solid red; padding: 10px">
+            <strong>Error:</strong> {{ error_admin_profile }}
+          </div>
+          {% endif %} {% if success_admin_profile %}
+          <div style="color: green; border: 1px solid green; padding: 10px">
+            <strong>Success:</strong> {{ success_admin_profile }}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Tab: Scrape Results -->
+      <!-- Tab: Scrape Results -->
+      <div id="scrape_results" class="tab-content">
+        <div class="section">
+          <h2>Scrape Results</h2>
+          {% if error_scrape %}
+          <div style="color: red; border: 1px solid red; padding: 10px">
+            <strong>Error:</strong> {{ error_scrape }}
+          </div>
+          {% endif %} {% if success_scrape %}
+          <div style="color: green; border: 1px solid green; padding: 10px">
+            <strong>Success:</strong> {{ success_scrape }}
+          </div>
+          {% endif %}
+          <form id="scrape-form" method="POST" action="/scrape">
+            <input
+              type="text"
+              name="url"
+              placeholder="URL"
+              required
+            /><br /><br />
+
+            <div id="mid_roll_number_ranges">
+              <div class="form-group roll-range">
+                <label for="roll_start_mid">Roll Number Range Start:</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="roll_start_mid[]"
+                  required
+                /><br />
+                <label for="roll_end_mid">Roll Number Range End:</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="roll_end_mid[]"
+                  required
+                />
+                <br />
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-info"
+              onclick="addRollNumberRange('mid_roll_number_ranges', 'roll_mid')"
+            >
+              Add Another Range
+            </button>
+            <br /><br />
+
+            <input
+              type="text"
+              name="subject_code_start"
+              placeholder="Subject Code Start"
+              required
+            /><br />
+            <input
+              type="text"
+              name="subject_code_end"
+              placeholder="Subject Code End"
+              required
+            /><br />
+
+            <br /><br />
+
+            <button type="submit" class="btn btn-primary">
+              Scrape Results
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div id="download_results" class="tab-content">
+        <div id="selection-method" class="section">
+          <h2>Download Semester Results</h2>
+
+          <div>
+            <label>
+              <input
+                type="radio"
+                name="selection_method"
+                value="branch_section"
+                onclick="toggleSelectionMethod()"
+              />
+              Branch-Section Wise
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="selection_method"
+                value="roll_number"
+                onclick="toggleSelectionMethod()"
+                checked
+              />
+              Roll Number Wise
+            </label>
+          </div>
+        </div>
+
+        <!-- Roll Number Wise Form -->
+        <div id="roll-number-container" class="form-container">
+          <h3>Select Roll Numbers</h3>
+          <form id="roll-number-form" method="POST" action="/download">
+            <div id="mid_roll_number_ranges_1">
+              <div class="form-group roll-range">
+                <label for="roll_start_mid">Roll Number Range Start:</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="roll_start_mid[]"
+                  required
+                /><br />
+                <label for="roll_end_mid">Roll Number Range End:</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="roll_end_mid[]"
+                  required
+                />
+                <br />
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-info"
+              onclick="addRollNumberRange('mid_roll_number_ranges_1', 'roll_mid')"
+            >
+              Add Another Range
+            </button>
+            <div class="form-group">
+              <label for="download_results_passed_out_year">Passed Out Year:</label>
+              <input
+                type="text"
+                id="download_results_passed_out_year"
+                name="passed_out_year"
+                class="form-control"
+                placeholder="Enter Year"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="download_results_sgpa_type">SGPA Type:</label>
+              <select
+                name="sgpa_type"
+                id="download_results_sgpa_type"
+                class="form-control"
+                required
+              >
+                <option value="none">None</option>
+                <option value="actual">Actual SGPA</option>
+                <option value="calculated">Calculated SGPA</option>
+                <option value="both">Both SGPA</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+              Download Results
+            </button>
+          </form>
+          {% if error_download %}
+          <div style="color: red; border: 1px solid red; padding: 10px">
+            <strong>Error:</strong> {{ error_download }}
+          </div>
+          {% endif %} {% if success_download %}
+          <div style="color: green; border: 1px solid green; padding: 10px">
+            <strong>Success:</strong> {{ success_download }}
+          </div>
+          {% endif %}
+        </div>
+        <!-- Branch-Section Wise Form -->
+        <div
+          id="branch-section-container"
+          class="form-container"
+          style="display: none"
+        >
+          <h3>Select Branch and Section</h3>
+          <form
+            id="branch-section-form"
+            method="POST"
+            action="/branch_section_download"
+          >
+            <div class="form-group">
+              <label for="branch">Branch:</label>
+              <select
+                id="branch"
+                class="form-control"
+                name="branch"
+                onchange="updateSections()"
+                required
+              >
+                <option value="" disabled selected>Select Branch</option>
+                <!-- Add Branch options dynamically -->
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="section">Section:</label>
+              <select id="section" class="form-control" name="section" required>
+                <option value="" disabled selected>Select Section</option>
+                <option value="ALL">ALL</option>
+                <!-- Add Section options dynamically based on branch selection -->
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="branch_section_passed_out_year">Passed Out Year:</label>
+              <input
+                type="text"
+                id="branch_section_passed_out_year"
+                name="passed_out_year"
+                class="form-control"
+                placeholder="Enter Year"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="branch_section_sgpa_type">SGPA Type:</label>
+              <select
+                name="sgpa_type"
+                id="branch_section_sgpa_type"
+                class="form-control"
+                required
+              >
+                <option value="none">None</option>
+                <option value="actual">Actual SGPA</option>
+                <option value="calculated">Calculated SGPA</option>
+                <option value="both">Both SGPA</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+              Download Results
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Tab: Upload Profile -->
+      <div id="upload_profile" class="tab-content active">
+        <div class="section">
+          <h1>Upload Profile</h1>
+          {% if error_upload_profile %}
+          <div style="color: red; border: 1px solid red; padding: 10px">
+            <strong>Error:</strong> {{ error_upload_profile}}
+          </div>
+          {% endif %} {% if success_upload_profile %}
+          <div style="color: green; border: 1px solid green; padding: 10px">
+            <strong>Success:</strong> {{ success_upload_profile }}
+          </div>
+          {% endif %}
+          <h3 style="color: #ff6958">
+            * Make sure excel sheet format is same as below given template
+          </h3>
+          <div>
+            <button
+              onclick="location.href='/download_excel_with_columns'"
+              class="btn btn-info"
+            >
+              Download Excel Template
+            </button>
+            <br /><br />
+          </div>
+
+          <form
+            action="/upload_profile"
+            method="POST"
+            enctype="multipart/form-data"
+          >
+            <input type="file" name="file" />
+            <button type="submit">Upload</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Tab: Upload Results -->
+      <div id="upload_results" class="tab-content">
+        <div class="section">
+          <h2>Upload Scraped Results to DB</h2>
+          {% if error_upload_results %}
+          <div style="color: red; border: 1px solid red; padding: 10px">
+            <strong>Error:</strong> {{ error_upload_results}}
+          </div>
+          {% endif %} {% if success_upload_results %}
+          <div style="color: green; border: 1px solid green; padding: 10px">
+            <strong>Success:</strong> {{ success_upload_results }}
+          </div>
+          {% endif %}
+          <h3 style="color: #ff6958">* Upload the scraped files</h3>
+          <form
+            id="upload-results-form"
+            action="/upload_results"
+            method="post"
+            enctype="multipart/form-data"
+          >
+            <label for="excel_file">Upload Excel File:</label>
+            <input type="file" name="excel_file" id="excel_file" required />
+            <br /><br />
+            <button type="submit">Upload Results</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>© Copyright 2025 - All Rights Reserved www.glwec.in</p>
+    </footer>
+
+    <script>
+      // Function to fetch profile columns from the server and display th
+      function toggleSelectionMethod() {
+        const selectedMethod = document.querySelector(
+          "input[name='selection_method']:checked"
+        ).value;
+
+        const branchSectionContainer = document.getElementById(
+          "branch-section-container"
+        );
+        const rollNumberContainer = document.getElementById(
+          "roll-number-container"
+        );
+
+        if (selectedMethod === "branch_section") {
+          branchSectionContainer.style.display = "block";
+          rollNumberContainer.style.display = "none";
+        } else if (selectedMethod === "roll_number") {
+          branchSectionContainer.style.display = "none";
+          rollNumberContainer.style.display = "block";
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Fetch branches and sections from the server
+        fetch("/get_branch_sections_hod")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Failed to fetch branch and section data.");
+            }
+            return response.json();
+          })
+          .then((branchSections) => {
+            populateBranchDropdown(branchSections);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      });
+
+      function populateBranchDropdown(branchSections) {
+        const branchDropdown = document.getElementById("branch");
+
+        // Populate branches
+        branchDropdown.innerHTML =
+          '<option value="" disabled selected>Select Branch</option>';
+        branchSections.forEach(({ branch }) => {
+          const option = document.createElement("option");
+          option.value = branch;
+          option.textContent = branch;
+          branchDropdown.appendChild(option);
+        });
+
+        // Attach an event listener to update sections when a branch is selected
+        branchDropdown.addEventListener("change", function () {
+          updateSections(branchSections);
+        });
+      }
+
+      function updateSections(branchSections) {
+        const branchDropdown = document.getElementById("branch");
+        const sectionDropdown = document.getElementById("section");
+
+        const selectedBranch = branchDropdown.value;
+
+        // Enable the "ALL" option
+        const allOption = sectionDropdown.querySelector('option[value="ALL"]');
+        if (allOption) {
+          allOption.disabled = false; // Ensure "ALL" is enabled
+        }
+
+        // Find sections for the selected branch
+        const branchData = branchSections.find(
+          (branch) => branch.branch === selectedBranch
+        );
+
+        // If the selected branch has associated sections, populate the section dropdown
+        if (branchData) {
+          const sections = branchData.sections.split(","); // Assuming sections are comma-separated
+
+          // Clear current sections except the "ALL" option
+          sectionDropdown.innerHTML = '<option value="ALL">ALL</option>';
+
+          // Add the available sections to the dropdown
+          sections.forEach((section) => {
+            const trimmedSection = section.replace(/[\[\]"]/g, "").trim(); // Remove unwanted characters
+            const option = document.createElement("option");
+            option.value = trimmedSection;
+            option.textContent = trimmedSection;
+            sectionDropdown.appendChild(option);
+          });
+        } else {
+          // If no branch selected or no sections found, just reset the section dropdown
+          sectionDropdown.innerHTML =
+            '<option value="" disabled selected>Select Section</option>';
+        }
+      }
+
+      const activeTab = "{{ active_tab }}";
+      if (activeTab) {
+        openTab(activeTab);
+      } else {
+        // If there's no active_tab from the server, show the default tab
+        openTab("upload_profile");
+      }
+
+      // Save the active tab before form submission
+      document.addEventListener("DOMContentLoaded", function () {
+        const forms = document.querySelectorAll("form");
+        forms.forEach((form) => {
+          form.addEventListener("submit", function () {
+            const activeTab = document.querySelector(".tab.active");
+            if (activeTab) {
+              const hiddenTabInput = form.querySelector(
+                "input[name='active_tab']"
+              );
+              if (hiddenTabInput) {
+                hiddenTabInput.value = activeTab.getAttribute("data-tab");
+              }
+            }
+          });
+        });
+
+        // Restore the active tab on page load
+        const activeTabValue = "{{ active_tab }}";
+        if (activeTabValue) {
+          const tabs = document.querySelectorAll(".tab");
+          const tabContents = document.querySelectorAll(".tab-content");
+
+          tabs.forEach((tab) => tab.classList.remove("active"));
+          tabContents.forEach((content) => content.classList.remove("active"));
+
+          const activeTabElement = document.querySelector(
+            `.tab[data-tab='${activeTabValue}']`
+          );
+          const activeTabContent = document.getElementById(activeTabValue);
+
+          if (activeTabElement) activeTabElement.classList.add("active");
+          if (activeTabContent) activeTabContent.classList.add("active");
+        }
+
+        // Clear messages on click outside the form
+        document.addEventListener("click", function (event) {
+          if (!event.target.closest(".section")) {
+            const messages = document.querySelectorAll(".section div[style]");
+            messages.forEach((message) => message.remove());
+          }
+        });
+      });
+
+      function openTab(tabName) {
+        const tabs = document.querySelectorAll(".tab");
+        const tabContents = document.querySelectorAll(".tab-content");
+
+        tabs.forEach((tab) => tab.classList.remove("active"));
+        tabContents.forEach((content) => content.classList.remove("active"));
+
+        const activeTab = document.querySelector(`.tab[data-tab='${tabName}']`);
+        const activeContent = document.getElementById(tabName);
+
+        if (activeTab) activeTab.classList.add("active");
+        if (activeContent) activeContent.classList.add("active");
+
+        localStorage.setItem("activeTab", tabName);
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const savedTab = localStorage.getItem("activeTab");
+        if (savedTab) {
+          openTab(savedTab);
+        } else {
+          // If no saved tab is present, default to 'faculty_users_update'
+          openTab("admin_profile");
+        }
+
+        // Clear error messages only if the page was reloaded
+        if (
+          performance.navigation.type === performance.navigation.TYPE_RELOAD
+        ) {
+          const messages = document.querySelectorAll(".section div[style]");
+          messages.forEach((message) => {
+            message.remove();
+          });
+        }
+      });
+
+      let rangeCounter = 1;
+
+      //function to add roll range
+      function addRollNumberRange(containerId, rangePrefix) {
+        const container = document.getElementById(containerId);
+
+        const newRange = document.createElement("div");
+        newRange.classList.add("form-group", "roll-range");
+        newRange.innerHTML = `
+        <label>Roll Number Range Start:</label>
+        <input
+          type="number"
+          class="form-control"
+          name="roll_start_mid[]"
+          required
+        /><br>
+        <label>Roll Number Range End:</label>
+        <input
+          type="number"
+          class="form-control"
+          name="roll_end_mid[]"
+          required
+        /><br>
+        <button type="button" onclick="removeRollNumberRange(this)">Remove</button>
+        <br><br>
+    `;
+
+        container.appendChild(newRange);
+      }
+
+      // Function to remove a roll number range
+      function removeRollNumberRange(button) {
+        const rangeToRemove = button.parentElement;
+        rangeToRemove.remove();
+      }
+
+      $(document).ready(function () {
+        $("#create-user-form-single, #create-user-form-multiple").on(
+          "submit",
+          function (event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const form = $(this);
+            const actionUrl = form.attr("action");
+            const formData = new FormData(form[0]);
+
+            $.ajax({
+              url: actionUrl,
+              type: "POST",
+              data: formData,
+              processData: false,
+              contentType: false,
+              success: function (response) {
+                $("#response-message")
+                  .text(response.message)
+                  .css("color", "green");
+              },
+              error: function (jqXHR) {
+                const errorResponse = jqXHR.responseJSON;
+                $("#response-message")
+                  .text(errorResponse.error || "An error occurred")
+                  .css("color", "red");
+              },
+            });
+          }
+        );
+      });
+
+      // Function to remove a specific range
+      function removeRange(rangeId) {
+        const rangeToRemove = document.getElementById(`range-${rangeId}`);
+        if (rangeToRemove) {
+          rangeToRemove.remove();
+        }
+      }
+      function fetchProfileColumns() {
+        fetch("/get_profile_columns")
+          .then(function (response) {
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json(); // Parse the response as JSON
+          })
+          .then(function (data) {
+            const displaySection = document.getElementById("profile_columns");
+            displaySection.innerHTML = ""; // Clear previous data
+
+            if (data.error) {
+              console.error("Error from server:", data.error);
+              displaySection.innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
+              return;
+            }
+
+            // Check if columns data is empty
+            if (!data.columns || data.columns.length === 0) {
+              displaySection.innerHTML = `<p style="color: orange;">No columns available.</p>`;
+              return;
+            }
+
+            // Create a table to display the columns
+            const table = document.createElement("table");
+            table.style.borderCollapse = "collapse";
+            table.style.width = "100%";
+
+            // Add a header row to the table
+            const headerRow = document.createElement("tr");
+            const headerCell = document.createElement("th");
+            headerCell.textContent = "Profile Columns";
+            headerCell.style.border = "1px solid #ddd";
+            headerCell.style.padding = "8px";
+            headerRow.appendChild(headerCell);
+            table.appendChild(headerRow);
+
+            // Add rows for each column
+            data.columns.forEach(function (col) {
+              const row = document.createElement("tr");
+              const cell = document.createElement("td");
+              cell.textContent = col;
+              cell.style.border = "1px solid #ddd";
+              cell.style.padding = "8px";
+              row.appendChild(cell);
+              table.appendChild(row);
+            });
+
+            displaySection.appendChild(table); // Append the table to the display section
+
+            // Add a close button
+            const closeButton = document.createElement("button");
+            closeButton.textContent = "Close";
+            closeButton.style.marginTop = "10px";
+            closeButton.onclick = function () {
+              displaySection.innerHTML = ""; // Clear the displayed content
+            };
+            displaySection.appendChild(closeButton); // Append the close button
+          })
+          .catch(function (error) {
+            console.error("Fetch error:", error);
+            const displaySection = document.getElementById("profile_columns");
+            displaySection.innerHTML = `<p style="color: red;">Failed to fetch profile columns: ${error.message}</p>`;
+          });
+      }
+
+      function resetScroll() {
+        window.scrollTo(0, 0);
+      }
+
+      function showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'alert alert-danger';
+        errorDiv.textContent = message;
+        
+        const form = document.getElementById('download-profile-form');
+        form.parentNode.insertBefore(errorDiv, form);
+        
+        // Remove the error message after 5 seconds
+        setTimeout(() => errorDiv.remove(), 5000);
+      }
+
+      function loadYears() {
+        console.log('Fetching years...');
+        const yearSelect = document.getElementById('download_passed_out_year');
+        yearSelect.innerHTML = '<option value="" disabled selected>Loading...</option>';
+        
+        fetch('/get_passed_out_years')
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Data received:', data);
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                yearSelect.innerHTML = '<option value="" disabled selected>Select Year</option>';
+                
+                if (Array.isArray(data) && data.length > 0) {
+                    data.forEach(year => {
+                        yearSelect.innerHTML += `<option value="${year}">${year}</option>`;
+                    });
+                } else {
+                    showError('No years found in the database');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching years:', error);
+                yearSelect.innerHTML = '<option value="" disabled selected>Error loading years</option>';
+                showError(`Error loading years: ${error.message}`);
+            });
+      }
+
+      // Make sure the DOM is loaded before attaching event listeners
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM Content Loaded');
+        
+        // Verify elements exist
+        const yearSelect = document.getElementById('download_passed_out_year');
+        const branchSelect = document.getElementById('download_branch_select');
+        const sectionSelect = document.getElementById('download_section_select');
+        
+        if (!yearSelect || !branchSelect || !sectionSelect) {
+            console.error('One or more select elements not found!');
+            return;
+        }
+        
+        console.log('Year select element:', yearSelect);
+        console.log('Branch select element:', branchSelect);
+        console.log('Section select element:', sectionSelect);
+        
+        loadYears();
+      });
+
+      // Update the year change event handler
+      document.getElementById('download_passed_out_year').addEventListener('change', function() {
+        const year = this.value;
+        console.log('Selected year:', year);
+        
+        const branchSelect = document.getElementById('download_branch_select');
+        const sectionSelect = document.getElementById('download_section_select');
+        
+        // Reset dropdowns
+        branchSelect.innerHTML = '<option value="" disabled selected>Loading branches...</option>';
+        sectionSelect.innerHTML = '<option value="" disabled selected>Select Section</option>';
+        branchSelect.disabled = true;
+        sectionSelect.disabled = true;
+        
+        if (!year) {
+            console.log('No year selected');
+            return;
+        }
+        
+        // Debug request to check data
+        fetch(`/debug_profile_data/${year}`)
+            .then(response => response.json())
+            .then(debug => {
+                console.log('Debug data:', debug);
+            });
+        
+        // Fetch branches
+        console.log('Fetching branches for year:', year);
+        fetch(`/get_passed_out_branches/${year}`)
+            .then(response => {
+                console.log('Branch fetch response status:', response.status);
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.error || 'Failed to fetch branches');
+                    });
+                }
+                return response.json();
+            })
+            .then(branches => {
+                console.log('Received branches:', branches);
+                branchSelect.innerHTML = '<option value="" disabled selected>Select Branch</option>';
+                
+                if (Array.isArray(branches) && branches.length > 0) {
+                    branches.forEach(branch => {
+                        branchSelect.innerHTML += `<option value="${branch}">${branch}</option>`;
+                    });
+                    branchSelect.disabled = false;
+                } else {
+                    branchSelect.innerHTML = '<option value="" disabled selected>No branches found</option>';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching branches:', error);
+                branchSelect.innerHTML = '<option value="" disabled selected>Error loading branches</option>';
+                alert(`Error loading branches: ${error.message}`);
+            });
+      });
+
+      // Update the branch change event handler
+      document.getElementById('download_branch_select').addEventListener('change', function() {
+        const year = document.getElementById('download_passed_out_year').value;
+        const branch = this.value;
+        console.log('Selected year:', year, 'Selected branch:', branch);
+        
+        const sectionSelect = document.getElementById('download_section_select');
+        sectionSelect.innerHTML = '<option value="" disabled selected>Loading sections...</option>';
+        sectionSelect.disabled = true;
+        
+        if (!year || !branch) {
+            console.log('Missing year or branch');
+            return;
+        }
+        
+        // Fetch sections
+        console.log('Fetching sections for year:', year, 'and branch:', branch);
+        fetch(`/get_passed_out_sections/${year}/${encodeURIComponent(branch)}`)
+            .then(response => {
+                console.log('Section fetch response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(sections => {
+                console.log('Received sections:', sections);
+                sectionSelect.innerHTML = '<option value="" disabled selected>Select Section</option>';
+                sectionSelect.innerHTML += '<option value="ALL">ALL</option>';
+                
+                if (Array.isArray(sections) && sections.length > 0) {
+                    sections.forEach(section => {
+                        sectionSelect.innerHTML += `<option value="${section}">${section}</option>`;
+                    });
+                }
+                sectionSelect.disabled = false;
+            })
+            .catch(error => {
+                console.error('Error fetching sections:', error);
+                sectionSelect.innerHTML = '<option value="" disabled selected>Error loading sections</option>';
+            });
+      });
+
+      // Update the form submission handler
+      document.getElementById('download-profile-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const yearSelect = document.getElementById('download_passed_out_year');
+        const branchSelect = document.getElementById('download_branch_select');
+        const sectionSelect = document.getElementById('download_section_select');
+        
+        const year = yearSelect.value;
+        const branch = branchSelect.value;
+        const section = sectionSelect.value;
+        
+        // Create a descriptive filename
+        const fileName = `Student_Profiles_${year}_${branch}_${section === 'ALL' ? 'AllSections' : section}.xlsx`;
+        
+        const formData = new FormData(this);
+        fetch('/download_profile', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                // Reset all dropdowns after successful download
+                yearSelect.value = '';
+                branchSelect.innerHTML = '<option value="" disabled selected>Select Branch</option>';
+                sectionSelect.innerHTML = '<option value="" disabled selected>Select Section</option>';
+                
+                // Disable cascading dropdowns
+                branchSelect.disabled = true;
+                sectionSelect.disabled = true;
+                
+                // Load years again to reset the first dropdown
+                loadYears();
+                
+                return response.blob();
+            }
+            throw new Error('Network response was not ok.');
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;  // Use the custom filename
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();  // Clean up the temporary anchor element
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error downloading profiles. Please try again.');
+        });
+      });
+    </script>
+  </body>
+</html>

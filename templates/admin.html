@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Profile Details</title>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-content">
+        <div class="white-header">
+          <img src="/static/logo.png" alt="Alverno College Logo" class="logo" />
+          <h2>
+            <b>GOKARAJU LAILAVATHI<br />ENGINEERING COLLEGE</b>
+          </h2>
+        </div>
+        <div class="header-text">
+          <div class="red-header"></div>
+          <div class="green-header">
+            <nav>
+              <a href="{{ url_for('admin') }}" class="tab1 active">Home</a>
+              <a href="{{ url_for('admin_student') }}" class="tab1">Student</a>
+              <a href="{{ url_for('admin_faculty') }}" class="tab1">Faculty</a>
+              <a
+                href="{{ url_for('manage_notifications') }}"
+                class="icon-button"
+              >
+                <span class="material-icons">notifications</span>
+              </a>
+              <form
+                action="http://127.0.0.1:5000/logout"
+                method="POST"
+                style="display: inline"
+              >
+                <button type="submit" class="apply-now">Logout</button>
+              </form>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <div class="rheader">
+        <h3><b>Super Admin Home</b></h3>
+      </div>
+    </header>
+
+    <div class="sidebar">
+      <div class="tabs">
+          <div class="tab active" data-tab="create" onclick="resetScroll(); openTab('create');">
+              Create<br />Student/Faculty
+          </div>
+          <div class="tab" data-tab="delete" onclick="resetScroll(); openTab('delete');">
+              Delete Access
+          </div>
+      </div>
+  </div>
+  
+
+    <div class="main-content">
+      <div id="create" class="tab-content active">
+        <div class="section">
+          <h2>Create Student/Faculty</h2>
+
+          <!-- Dropdown to select user role -->
+          <select id="role-select" onchange="toggleRoleForm()" required>
+            <option value="">Select Role</option>
+            <option value="student">Student</option>
+            <option value="faculty">Faculty</option>
+          </select>
+          <br />
+          <br />
+          <!-- Student Form -->
+          <div id="student-form" class="hidden">
+            <select id="form-toggle" onchange="toggleStudentForm()">
+              <option value="single">Create Single Student</option>
+              <option value="multiple">Create Multiple Students</option>
+            </select>
+
+            <!-- Single Student Creation -->
+            <form
+              id="create-student-single"
+              class="hidden"
+              action="/admin_action"
+              method="POST"
+            >
+              <input type="hidden" name="action" value="create_single" />
+              <h3>Single Student Creation</h3>
+              <input
+                type="text"
+                name="username"
+                placeholder="Username (12 digits, starts with 2456)"
+                required
+              />
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                required
+              />
+              <input type="hidden" name="user_type" value="student" />
+              <button type="submit">Create Student</button>
+            </form>
+
+            <!-- Multiple Students Creation -->
+            <form
+              id="create-student-multiple"
+              class="hidden"
+              action="/admin_action"
+              method="POST"
+            >
+              <input type="hidden" name="action" value="create_multiple" />
+              <h3>Multiple Students Creation</h3>
+              <input
+                type="number"
+                name="roll_start_range"
+                placeholder="Start Roll Number"
+                required
+              />
+              <input
+                type="number"
+                name="roll_end_range"
+                placeholder="End Roll Number"
+                required
+              />
+              <input type="hidden" name="user_type" value="student" />
+              <button type="submit">Create Students</button>
+            </form>
+          </div>
+
+          <form id="faculty-form" action="/admin_action" method="POST">
+            <input type="hidden" name="action" value="create_single" />
+            <h3>Faculty/Admin Creation</h3>
+
+            <input
+              type="text"
+              name="faculty_id"
+              placeholder="Faculty ID (4 digits only)"
+              pattern="\d{4}"
+              maxlength="4"
+              required
+              oninvalid="this.setCustomValidity('Please enter exactly 4 digits')"
+              oninput="this.setCustomValidity('')"
+              />
+
+            <input
+              type="text"
+              name="first_name"
+              placeholder="First Name"
+              required
+            />
+            <input
+              type="text"
+              name="last_name"
+              placeholder="Last Name"
+              required
+            />
+
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              required
+              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+              title="Please enter a valid email address (e.g., user@example.com)"
+              oninvalid="this.setCustomValidity('Please enter a valid email address (e.g., user@example.com)')"
+              oninput="this.setCustomValidity('')"
+            />
+
+            <input
+              type="text"
+              name="phone_number"
+              placeholder="Phone Number"
+              pattern="\d{10}"
+              maxlength="10"
+              title="Enter a valid 10-digit phone number"
+              required
+              oninvalid="this.setCustomValidity('Please enter exactly 10 digits (numbers only)')"
+              oninput="this.setCustomValidity('')"
+            />
+
+            <label for="department_id">Department</label>
+            <select name="department_id" id="department_id" required>
+              <!-- Options will be dynamically injected -->
+            </select>
+
+            <input
+              type="text"
+              name="designation"
+              placeholder="Designation"
+              required
+            />
+            <input
+              type="date"
+              name="joining_date"
+              placeholder="Joining Date"
+              required
+            />
+            <input
+              type="number"
+              step="0.01"
+              name="salary"
+              placeholder="Salary"
+              required
+            />
+
+            <h4>Select Roles</h4>
+            <label>
+              <input type="checkbox" name="roles[]" value="hod" />
+              HOD
+            </label>
+            <br />
+            <label>
+              <input type="checkbox" name="roles[]" value="e-admin" />
+              E-Admin
+            </label>
+            <br />
+            <label>
+              <input type="checkbox" name="roles[]" value="faculty" />
+              Faculty
+            </label>
+            <br />
+
+            <label for="status">Status</label>
+            <select name="status" id="status" required>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+
+            <input
+              type="hidden"
+              id="is_hod_confirmed"
+              name="is_hod_confirmed"
+              value="false"
+            />
+            <!-- HOD Confirmation Prompt -->
+
+            <button type="submit">Create Faculty</button>
+          </form>
+
+          {% if hod_alert %}
+          <form action="/confirm_hod" method="POST">
+            <p>{{ hod_message }}</p>
+            <button type="submit" name="is_hod_confirmed" value="true">
+              Yes, change
+            </button>
+            <button type="submit" name="is_hod_confirmed" value="false">
+              No, go back
+            </button>
+          </form>
+          {% endif %} {% if error %}
+          <div
+            id="create-error-message"
+            style="color: red; border: 1px solid red; padding: 10px"
+          >
+            <strong>Error:</strong> {{ error }}
+          </div>
+          {% endif %} {% if message %}
+          <div
+            id="create-success-message"
+            style="color: green; border: 1px solid green; padding: 10px"
+          >
+            <strong>Success:</strong> {{ message }}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Tab: Delete User -->
+      <div id="delete" class="tab-content">
+        <div class="section">
+          {% if error_delete %}
+          <div
+            id="error-message"
+            style="color: red; border: 1px solid red; padding: 10px"
+          >
+            <strong>Error:</strong> {{ error_delete }}
+          </div>
+          {% endif %} {% if success_delete %}
+          <div
+            id="success-message"
+            style="color: green; border: 1px solid green; padding: 10px"
+          >
+            <strong>Success:</strong> {{ success_delete }}
+          </div>
+          {% endif %}
+          <h2>Delete Student/Faculty</h2>
+          <form
+            id="delete-user-form"
+            action="/admin_delete_action"
+            method="POST"
+            onsubmit="return confirmDelete('student')"
+          >
+            <input type="hidden" name="action" value="delete" />
+            <select
+              id="action-type"
+              name="action_type"
+              onchange="toggleDeleteFields()"
+            >
+              <option value="single">Single Student</option>
+              <option value="multiple">Multiple Students</option>
+            </select>
+            <div id="single-delete-fields">
+              <input
+                type="text"
+                name="username"
+                placeholder="Username to delete"
+              />
+            </div>
+            <div id="multiple-delete-fields" style="display: none">
+              <input
+                type="text"
+                name="roll_start"
+                placeholder="Start Roll Number"
+              />
+              <input
+                type="text"
+                name="roll_end"
+                placeholder="End Roll Number"
+              />
+            </div>
+            <button type="submit">Delete Student(s)</button>
+          </form>
+          <h3>Faculty Deletion</h3>
+          <form
+            action="/admin_delete_action"
+            method="POST"
+            onsubmit="return confirmDelete('faculty')"
+          >
+            <input type="hidden" name="action_type" value="single" />
+            <input
+              type="text"
+              name="faculty_id"
+              placeholder="Faculty ID"
+              required
+            />
+            <button type="submit">Delete Faculty</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <p>© Copyright 2025 - All Rights Reserved www.glwec.in</p>
+    </footer>
+
+    <script>
+      //alert pop to dleete faculty or student
+      function confirmDelete(userType) {
+        return confirm(
+          `Are you sure you want to delete this ${userType}? This action cannot be undone.`
+        );
+      }
+
+      function toggleDeleteFields() {
+        var actionType = document.getElementById("action-type").value;
+        document.getElementById("single-delete-fields").style.display =
+          actionType === "single" ? "block" : "none";
+        document.getElementById("multiple-delete-fields").style.display =
+          actionType === "multiple" ? "block" : "none";
+      }
+      // Hide messages when clicking anywhere on the screen
+      document.addEventListener("DOMContentLoaded", function () {
+        // Function to hide messages
+        function hideMessages() {
+          const createErrorMessage = document.getElementById(
+            "create-error-message"
+          );
+          const createSuccessMessage = document.getElementById(
+            "create-success-message"
+          );
+
+          if (createErrorMessage) createErrorMessage.style.display = "none";
+          if (createSuccessMessage) createSuccessMessage.style.display = "none";
+        }
+
+        // Hide messages after 5 seconds automatically
+        //setTimeout(hideMessages, 5000);
+
+        // Hide messages when clicking anywhere outside them
+        document.addEventListener("click", function (event) {
+          const createErrorMessage = document.getElementById(
+            "create-error-message"
+          );
+          const createSuccessMessage = document.getElementById(
+            "create-success-message"
+          );
+
+          // Ensure the click is outside the messages
+          if (
+            createErrorMessage &&
+            !createErrorMessage.contains(event.target)
+          ) {
+            createErrorMessage.style.display = "none";
+          }
+          if (
+            createSuccessMessage &&
+            !createSuccessMessage.contains(event.target)
+          ) {
+            createSuccessMessage.style.display = "none";
+          }
+        });
+      });
+
+      // Function to confirm the HOD status and submit the form
+      function confirmHod() {
+        document.getElementById("is_hod_confirmed").value = "true"; // Set confirmed to true
+        document.getElementById("faculty-form").submit(); // Submit the form with confirmation
+      }
+
+      // Function to deny the HOD status and show a prompt
+      function denyHod() {
+        document.getElementById("is_hod_confirmed").value = "false"; // Set confirmed to false
+        alert("You have denied the change. Please review your form again.");
+        window.location.href = window.location.href; // Refresh the page to show the form again
+      }
+      function toggleDeleteFields() {
+        const actionType = document.getElementById("action-type").value;
+        document.getElementById("single-delete-fields").style.display =
+          actionType === "single" ? "block" : "none";
+        document.getElementById("multiple-delete-fields").style.display =
+          actionType === "multiple" ? "block" : "none";
+      }
+      // Hide messages when clicking anywhere on the screen
+      document.addEventListener("click", function () {
+        const errorMessage = document.getElementById("error-message");
+        const successMessage = document.getElementById("success-message");
+        if (errorMessage) errorMessage.style.display = "none";
+        if (successMessage) successMessage.style.display = "none";
+      });
+      // Fetch and populate the department dropdown
+      fetch("/get_departments")
+        .then((response) => response.json())
+        .then((data) => {
+          const departmentDropdown = document.getElementById("department_id");
+          const hodCheckbox = document.querySelector('input[name="roles[]"][value="hod"]');
+          const facultyCheckbox = document.querySelector('input[name="roles[]"][value="faculty"]');
+
+          // Populate dropdown with department and HOD names
+          data.forEach((department) => {
+            const option = document.createElement("option");
+            option.value = department.department_id;
+            option.textContent = department.hod_name
+              ? `${department.department_name} (${department.hod_name})`
+              : department.department_name;
+            departmentDropdown.appendChild(option);
+          });
+
+          // Add change event listener to department dropdown
+          departmentDropdown.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const isNonTeaching = selectedOption.textContent.includes('Non Teaching');
+            
+            // Disable/enable checkboxes based on department selection
+            hodCheckbox.disabled = isNonTeaching;
+            facultyCheckbox.disabled = isNonTeaching;
+            
+            // If non-teaching is selected, uncheck the boxes
+            if (isNonTeaching) {
+              hodCheckbox.checked = false;
+              facultyCheckbox.checked = false;
+            }
+          });
+
+          // Trigger the change event on page load to set initial state
+          departmentDropdown.dispatchEvent(new Event('change'));
+        })
+        .catch((error) => console.error("Error fetching departments:", error));
+      // Function to toggle the form visibility based on the selected role
+      // Function to toggle the visibility of content based on the selected role
+      function toggleRoleForm() {
+        const selectedRole = document.getElementById("role-select").value;
+        const studentForm = document.getElementById("student-form");
+        const facultyForm = document.getElementById("faculty-form");
+
+        // Hide all forms initially
+        studentForm.style.display = "none";
+        facultyForm.style.display = "none";
+
+        // Show the appropriate form based on the selected role
+        if (selectedRole === "student") {
+          studentForm.style.display = "block";
+        } else if (selectedRole === "faculty") {
+          facultyForm.style.display = "block";
+        }
+      }
+
+      // Function to toggle between single and multiple student forms
+      function toggleStudentForm() {
+        const formToggle = document.getElementById("form-toggle").value;
+        const singleForm = document.getElementById("create-student-single");
+        const multipleForm = document.getElementById("create-student-multiple");
+
+        // Show or hide the single and multiple forms based on the selection
+        if (formToggle === "single") {
+          singleForm.style.display = "block";
+          multipleForm.style.display = "none";
+        } else if (formToggle === "multiple") {
+          singleForm.style.display = "none";
+          multipleForm.style.display = "block";
+        }
+      }
+
+      // Initial call to set up the page state
+      document.addEventListener("DOMContentLoaded", function () {
+        toggleRoleForm(); // Initialize with hidden sections
+        toggleStudentForm(); // Initialize student form display
+      });
+      const activeTab = "{{ active_tab }}";
+      if (activeTab) {
+        openTab(activeTab);
+      } else {
+        // If there's no active_tab from the server, show the default tab
+        openTab("create");
+      }
+      // Function to handle tab switching
+      function openTab(tabName) {
+        const tabs = document.querySelectorAll(".tab");
+        const tabContents = document.querySelectorAll(".tab-content");
+
+        tabs.forEach((tab) => tab.classList.remove("active"));
+        tabContents.forEach((content) => content.classList.remove("active"));
+
+        const activeTab = document.querySelector(`.tab[data-tab='${tabName}']`);
+        const activeContent = document.getElementById(tabName);
+
+        if (activeTab) activeTab.classList.add("active");
+        if (activeContent) activeContent.classList.add("active");
+
+        // Store the active tab in localStorage
+        localStorage.setItem("activeTab", tabName);
+      }
+
+      // On page load, set the active tab based on the stored value in localStorage
+      window.onload = function () {
+        const activeTabValue = localStorage.getItem("activeTab");
+        if (activeTabValue) {
+          const tabs = document.querySelectorAll(".tab");
+          const tabContents = document.querySelectorAll(".tab-content");
+
+          tabs.forEach((tab) => tab.classList.remove("active"));
+          tabContents.forEach((content) => content.classList.remove("active"));
+
+          const activeTab = document.querySelector(
+            `.tab[data-tab='${activeTabValue}']`
+          );
+          const activeContent = document.getElementById(activeTabValue);
+
+          if (activeTab) activeTab.classList.add("active");
+          if (activeContent) activeContent.classList.add("active");
+        }
+
+        toggleRoleForm(); // Ensure the correct form is visible on page load
+      };
+
+      // jQuery to handle form submissions
+      $(document).ready(function () {
+        toggleRoleForm(); // Call toggleRoleForm on page load to set initial visibility
+
+        // Handle form submissions for create-student-single
+        $("#create-student-single").on("submit", function (event) {
+          event.preventDefault();
+          const form = $(this);
+          const actionUrl = form.attr("action");
+          const formData = form.serialize();
+
+          $.post(actionUrl, formData)
+            .done(function (response) {
+              $("#response-message")
+                .text(response.message)
+                .css("color", "green");
+            })
+            .fail(function (jqXHR) {
+              const errorResponse = jqXHR.responseJSON;
+              $("#response-message")
+                .text(errorResponse.error || "An error occurred")
+                .css("color", "red");
+            });
+        });
+
+        // Handle form submissions for create-student-multiple
+        $("#create-student-multiple").on("submit", function (event) {
+          event.preventDefault();
+          const form = $(this);
+          const actionUrl = form.attr("action");
+          const formData = form.serialize();
+
+          $.post(actionUrl, formData)
+            .done(function (response) {
+              $("#response-message")
+                .text(response.message)
+                .css("color", "green");
+            })
+            .fail(function (jqXHR) {
+              const errorResponse = jqXHR.responseJSON;
+              $("#response-message")
+                .text(errorResponse.error || "An error occurred")
+                .css("color", "red");
+            });
+        });
+
+        // Handle form submissions for faculty/admin creation
+        $("#faculty-form").on("submit", function (event) {
+          event.preventDefault();
+          const form = $(this);
+          const actionUrl = form.attr("action");
+          const formData = form.serialize();
+
+          $.post(actionUrl, formData)
+            .done(function (response) {
+              $("#response-message")
+                .text(response.message)
+                .css("color", "green");
+            })
+            .fail(function (jqXHR) {
+              const errorResponse = jqXHR.responseJSON;
+              $("#response-message")
+                .text(errorResponse.error || "An error occurred")
+                .css("color", "red");
+            });
+        });
+      });
+
+      // Function to add a new range
+      let rangeCounter = 1;
+      function addRange() {
+        rangeCounter++;
+        const rollNumberDiv = document.getElementById("roll-number-ranges");
+
+        const newRangeDiv = document.createElement("div");
+        newRangeDiv.classList.add("range");
+        newRangeDiv.id = `range-${rangeCounter}`;
+
+        newRangeDiv.innerHTML = `
+          <label>Roll Number Range ${rangeCounter} Start:</label>
+          <input type="text" name="roll_start_${rangeCounter}" placeholder="Roll Start ${rangeCounter}">
+          <label>Roll Number Range ${rangeCounter} End:</label>
+          <input type="text" name="roll_end_${rangeCounter}" placeholder="Roll End ${rangeCounter}">
+          <button type="button" onclick="removeRange(${rangeCounter})">Remove</button>
+          <br><br>
+        `;
+
+        rollNumberDiv.appendChild(newRangeDiv);
+      }
+
+      // Function to add a roll number range for download
+      function addRollNumberRange() {
+        const rollNumberRanges = document.getElementById("roll_number_ranges");
+        const newRange = document.createElement("div");
+        newRange.classList.add("form-group", "roll-range");
+
+        newRange.innerHTML = `
+          <label for="roll_start_download">Roll Number Range Start:</label>
+          <input type="number" class="form-control" name="roll_start_download[]" required />
+          <label for="roll_end_download">Roll Number Range End:</label>
+          <input type="number" class="form-control" name="roll_end_download[]" required />
+          <button type="button" onclick="removeRollNumberRange(this)">Remove</button>
+          <br><br>
+        `;
+
+        rollNumberRanges.appendChild(newRange);
+      }
+
+      // Function to remove a specific range
+      function removeRange(rangeId) {
+        const rangeToRemove = document.getElementById(`range-${rangeId}`);
+        if (rangeToRemove) {
+          rangeToRemove.remove();
+        }
+      }
+
+      // Function to remove a specific roll number range
+      function removeRollNumberRange(button) {
+        const rangeToRemove = button.parentElement;
+        rangeToRemove.remove();
+      }
+
+      // Function to toggle form visibility based on user selection
+      function toggleForm() {
+        const selectedValue = document.getElementById("form-toggle").value;
+        if (selectedValue === "single") {
+          document.getElementById("create-user-form-single").style.display =
+            "block";
+          document.getElementById("create-user-form-multiple").style.display =
+            "none";
+        } else {
+          document.getElementById("create-user-form-single").style.display =
+            "none";
+          document.getElementById("create-user-form-multiple").style.display =
+            "block";
+        }
+      }
+
+      // Call toggleForm on page load to set initial visibility
+      window.onload = function () {
+        toggleForm();
+      };
+
+      $(document).ready(function () {
+        toggleForm(); // Call toggleForm on page load to set initial visibility
+        $("#create-user-form-single, #create-user-form-multiple").submit(
+          function (event) {
+            event.preventDefault();
+            const form = $(this);
+            const actionUrl = form.attr("action");
+            const formData = form.serialize();
+
+            $.post(actionUrl, formData)
+              .done(function (response) {
+                alert("Form submitted successfully");
+              })
+              .fail(function (error) {
+                alert("Error submitting form: " + error.statusText);
+              });
+          }
+        );
+      });
+
+      window.addEventListener("scroll", () => {
+        const sidebar = document.querySelector(".sidebar");
+        const footer = document.querySelector("footer");
+        const footerOffsetTop = footer.offsetTop;
+        const scrollY = window.scrollY;
+        const windowHeight = window.innerHeight;
+
+        // Adjust the bottom position of the sidebar when near the footer
+        if (scrollY + windowHeight > footerOffsetTop) {
+          sidebar.style.position = "absolute";
+          sidebar.style.top = `${footerOffsetTop - sidebar.offsetHeight}px`;
+        } else {
+          sidebar.style.position = "fixed";
+          sidebar.style.top = "194px"; // Original fixed position
+        }
+      });
+
+
+
+
+      function resetScroll() {
+    window.scrollTo(0, 0);
+}
+
+    </script>
+  </body>
+</html>

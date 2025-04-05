@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Failed Students List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #e9ecef;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f1f1f1;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            background-color: #8b1b29;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 20px;
+        }
+
+        .back-button:hover {
+            background-color: #5e0404;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="{{ url_for('eadmin') }}" class="back-button">Back to Dashboard</a>
+    
+    <h2>Failed Students List</h2>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Roll Number</th>
+                <th>Student Name</th>
+                {% for i in range(1, 9) %}
+                    <th>Sem {{ i }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in failed_data %}
+                <tr>
+                    <td>{{ student.roll_number }}</td>
+                    <td>{{ student.student_name }}</td>
+                    {% for i in range(1, 9) %}
+                        <td>{{ student['sem' ~ i] }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    </body>
+    
+</html>

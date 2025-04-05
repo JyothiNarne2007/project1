@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Equal Width Headers</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.0/dist/sweetalert2.min.css"
+    />
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+      }
+
+      /* Header Styling */
+      .header {
+        display: flex;
+        width: 100%;
+        background-color: #f0f0f0;
+      }
+
+      .header-content {
+        display: flex;
+        width: 100%;
+      }
+
+      .white-header {
+        background-color: white;
+        color: black;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        flex: 1;
+      }
+
+      .white-header img {
+        max-width: 80px;
+        margin-left: 30px;
+        margin-right: 20px;
+      }
+
+      .header-text {
+        display: flex;
+        flex-direction: column;
+        flex: 1.7;
+      }
+
+      .rheader {
+        background-color: #8b1b29;
+        padding: 5px;
+      }
+      .rheader h3 {
+        color: white;
+        text-align: center;
+      }
+
+      .red-header {
+        background-color: #8b1b29;
+        color: white;
+        padding: 5px;
+        text-align: center;
+        flex: 1;
+        border-bottom-left-radius: 10px;
+      }
+
+      .green-header {
+        background-color: white;
+        color: black;
+        padding: 25px;
+        text-align: center;
+        flex: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      nav {
+        padding-left: 230px;
+        display: flex;
+        gap: 30px;
+        align-items: center;
+      }
+
+      nav a {
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+        font-size: 18px;
+      }
+
+      .apply-now {
+        background: linear-gradient(to right, #d64545, #ff9068);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 20px;
+        font-size: 20px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .apply-now:hover {
+        background: linear-gradient(to right, #b53838, #ff6958);
+      }
+
+      /* Main Tab Container */
+      /* Main Tab Container */
+      .tabs {
+        display: flex;
+        justify-content: space-around;
+        background-color: #8b1b29;
+        color: white;
+        padding: 5px 0;
+        cursor: pointer;
+      }
+
+      .tab {
+        flex: 1;
+        text-align: center;
+        padding: 15px;
+        background-color: #8b1b29;
+        border-radius: 10px; /* Add this line for curved corners */
+      }
+
+      .tab.active {
+        background-color: #ff5b5b;
+        color: #fff;
+        border-radius: 10px; /* Add this line to keep active tab rounded */
+      }
+
+      /* Tab Content */
+      .tab-content {
+        display: none;
+        padding: 20px;
+        max-width: 700px; /* Set a maximum width */
+        margin: auto;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 10px; /* Add this line for curved corners in tab content */
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .section {
+        margin: 20px;
+        padding: 20px;
+        background-color: #f0f0f0;
+        border-radius: 10px;
+      }
+
+      /* Form Styling */
+      form {
+        display: flex;
+        flex-direction: column;
+      }
+
+      form input,
+      form select,
+      form button {
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+      }
+
+      form button {
+        background-color: #8b1b29;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      form button:hover {
+        background-color: #ff5b5b;
+      }
+
+      .btn {
+        padding: 10px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .btn-info {
+        background-color: #8b1b29;
+        color: white;
+      }
+
+      .btn-success {
+        background-color: #8b1b29;
+        color: white;
+      }
+
+      .btn-primary {
+        background-color: #8b1b29;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-content">
+        <div class="white-header">
+          <img src="/static/logo.png" alt="Alverno College Logo" class="logo" />
+          <h2>
+            <b>GOKARAJU LAILAVATHI<br />ENGINEERING COLLEGE</b>
+          </h2>
+        </div>
+        <div class="header-text">
+          <div class="red-header"></div>
+          <div class="green-header">
+            <nav>
+              <a href="{{ url_for('academic_result') }}">Upload Mid marks</a>
+              <a href="{{ url_for('profile') }}">Student</a>
+              <a href="{{ url_for('edit_profile') }}">Faculty</a>
+              <a href="{{ url_for('change_password') }}">Admins</a>
+            </nav>
+            <form
+              action="http://127.0.0.1:5000/logout"
+              method="POST"
+              style="display: inline"
+            >
+              <button type="submit" class="apply-now">Logout</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </header>
+  </body>
+</html>

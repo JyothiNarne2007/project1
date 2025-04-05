@@ -1,0 +1,554 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
+  margin-left: 220px;
+  margin-top: 200px;
+}
+.icon-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  color: #333333;
+  background: #dddddd;
+  border: none;
+  outline: none;
+  border-radius: 50%;
+}
+
+.icon-button:hover {
+  cursor: pointer;
+}
+
+.icon-button:active {
+  background: #cccccc;
+}
+
+.icon-button__badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 25px;
+  height: 25px;
+  background: red;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
+
+.home-link {
+  color: red;
+  font-size: 1.5em; /* Adjust size as needed */
+  font-weight: bold; /* Optional for emphasis */
+}
+
+.header {
+  display: flex;
+  width: 100%;
+  background-color: #f0f0f0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000; /* Ensures it stays above other elements */
+}
+
+.header-content {
+  display: flex;
+  width: 100%;
+}
+
+.white-header {
+  background-color: white;
+  color: black;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.white-header img {
+  max-width: 80px;
+  margin-left: 30px;
+  margin-right: 20px;
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1.7;
+}
+
+.rheader {
+  background-color: #8b1b29;
+  padding: 0.1px;
+  position: fixed;
+  top: 135px; /* Adjust this based on the height of the header */
+  width: 100%;
+  z-index: 999; /* Stays above other elements but below header if necessary */
+}
+
+.rheader h3 {
+  color: white;
+  text-align: center;
+}
+.red-header {
+  background-color: #8b1b29;
+  color: white;
+  padding: 13px;
+  flex: 1;
+  border-bottom-left-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
+  text-align: right;
+}
+
+.green-header {
+  background-color: white;
+  color: black;
+  padding: 30px;
+  text-align: center;
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+nav {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  margin-left: auto;
+}
+
+nav a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.apply-now {
+  background: linear-gradient(to right, #d64545, #ff9068);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.apply-now:hover {
+  background: linear-gradient(to right, #b53838, #ff6958);
+}
+
+.profile-container {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  max-width: 900px;
+  padding: 30px;
+  margin: 40px 170px 20px;
+  font-size: 14px;
+}
+
+.profile-container h2,
+h3 {
+  color: #333;
+  text-align: left;
+}
+
+.profile-container h3 {
+  color: #8b1b29;
+  border-bottom: 2px solid #8b1b29;
+  font-size: 18px;
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+}
+
+.profile-section {
+  margin-bottom: 30px;
+}
+
+.profile-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.profile-details p {
+  background-color: #f9f9f9;
+  padding: 12px;
+  border-radius: 5px;
+  margin: 0;
+}
+
+.profile-details p strong {
+  display: inline-block;
+  width: 180px;
+  color: #333;
+}
+
+* Notifications Section */ .notifications {
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #e9ecef;
+}
+
+.notification {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #8b1b29;
+
+  border-radius: 5px;
+  background-color: #fff;
+}
+.icon-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  color: #333333;
+  background: #dddddd;
+  border: none;
+  outline: none;
+  border-radius: 50%;
+}
+.icon-button:hover {
+  cursor: pointer;
+}
+.icon-button:active {
+  background: #cccccc;
+}
+
+/* Sidebar */
+/* Sidebar */
+.sidebar {
+  width: 200px;
+  position: fixed;
+  top: 194px; /* Adjust based on your header height */
+  left: 0;
+  height: calc(100vh - 194px); /* Sidebar fills remaining height */
+  padding: 20px;
+  background-color: #ffffff;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  overflow-y: auto; /* Add scrolling for long sidebars */
+}
+
+/* Tabs Styling */
+.tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tab {
+  padding: 10px 0;
+  text-align: left;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: font-size 0.3s ease, color 0.3s ease; /* Smooth size and color transition */
+  border-bottom: 1px solid #ccc; /* Separator line */
+}
+
+/* Hover Effect */
+.tab:hover {
+  font-size: 1.1rem; /* Increase text size on hover */
+}
+
+/* Default Tab Styling */
+.tab1 {
+  padding: 10px 0;
+  text-align: left;
+  cursor: pointer;
+  font-size: 1rem;
+  color: black; /* Default color for non-active links */
+  text-decoration: none; /* Remove underline */
+  border-bottom: none; /* No underline for non-active links */
+  transition: font-size 0.3s ease, color 0.3s ease; /* Smooth size and color transition */
+}
+
+/* Active Tab Styling */
+.tab1.active {
+  color: #8b1b29; /* Constant red color for the active tab */
+  font-size: 1.2rem; /* Slightly larger text size for the active tab */
+  font-weight: bold; /* Make the active tab bold */
+  border-bottom: 2px solid #8b1b29; /* Optional: Add a red underline for the active tab */
+  pointer-events: none; /* Disable hover effect for the active link */
+  transition: none; /* Remove transition effects for the active tab */
+}
+
+/* Hover Effect for Non-Active Tabs */
+.tab1:hover {
+  font-size: 1.1rem; /* Slightly enlarge text on hover */
+  color: black; /* Keep black color on hover */
+  text-decoration: none; /* Ensure no underline appears */
+}
+
+/* Active Tab Styling */
+.tab.active {
+  color: #8b1b29; /* Active tab text color */
+  font-size: 1.2rem; /* Slightly larger text size for active tab */
+  font-weight: bold;
+}
+
+/* Tab Content */
+.tab-content {
+  display: none;
+  padding: 15px 30px; /* Adjust padding for a smaller content size */
+  background-color: white;
+  border: 3px solid #ddd;
+  border-radius: 10px;
+  font-size: 15px; /* Set the font size to be smaller */
+  width: 200%; /* Limit the width to make the tab content smaller */
+  max-width: 700px; /* Ensure the tab content doesn't grow too wide */
+  margin: 0 auto; /* Center content horizontally */
+  margin-top: 20px;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Adjust main content area to account for sidebar */
+.main-content {
+  margin-left: 20px;
+  padding: 20px;
+  min-height: 425px;
+}
+
+@media (max-width: 768px) {
+  .profile-details {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-container {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .profile-container h2 {
+    font-size: 20px;
+  }
+
+  .profile-container h3 {
+    font-size: 18px;
+  }
+
+  .profile-details p strong {
+    width: 140px;
+  }
+}
+
+.section {
+  margin: 20px;
+  padding: 20px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+}
+#role-select {
+  width: 200px; /* Adjust width as needed */
+  height: 40px; /* Adjust height as needed */
+  font-size: 16px; /* Adjust font size */
+  padding: 5px; /* Adjust padding inside the dropdown */
+  border-radius: 5px; /* Optional: to make the edges rounded */
+  border: 1px solid #ccc; /* Optional: border color */
+}
+#form-toggle {
+  width: 250px; /* Adjust width as needed */
+  height: 40px; /* Adjust height as needed */
+  font-size: 16px; /* Adjust font size */
+  padding: 5px; /* Adjust padding inside the dropdown */
+  border-radius: 5px; /* Optional: to make the edges rounded */
+  border: 1px solid #ccc; /* Optional: border color */
+}
+#action-type {
+  width: 250px; /* Adjust width as needed */
+  height: 40px; /* Adjust height as needed */
+  font-size: 16px; /* Adjust font size */
+  padding: 5px; /* Adjust padding inside the dropdown */
+  border-radius: 5px; /* Optional: to make the edges rounded */
+  border: 1px solid #ccc; /* Optional: border color */
+}
+.add-more {
+  padding: 10px;
+  width: 25%;
+}
+/* Form Styling */
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+form input,
+form select,
+form button {
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+form button {
+  background-color: #8b1b29;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+form button:hover {
+  background-color: #ff5b5b;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-info {
+  background-color: #8b1b29;
+  color: white;
+}
+
+.btn-success {
+  background-color: #8b1b29;
+  color: white;
+}
+
+.btn-primary {
+  background-color: #8b1b29;
+  color: white;
+}
+
+.alert-box {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.alert-box button {
+  background-color: #721c24;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+footer {
+  margin-top: 10px;
+  background-color: #8b1b29;
+  color: white;
+  text-align: center; /* Align text to the left */
+  padding: 1px 0;
+  padding-left: 230px; /* Add padding to maintain spacing */
+  transform: translateX(-230px); /* Shift text left by 230px */
+  width: 100%; /* Ensures it spans the entire width of the page */
+  position: relative; /* Keeps it within document flow */
+  bottom: 0;
+  z-index: 1000;
+}
+
+footer p {
+  text-indent: -190px; /* Moves the text 230px to the left */
+}
+
+/* General styles for the navigation */
+#main-nav ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+}
+
+#main-nav ul > li {
+  position: relative;
+  display: inline-block;
+}
+
+#main-nav ul li a {
+  text-decoration: none;
+  color: #333; /* Default text color */
+  padding: 10px 20px;
+  display: block;
+  font-size: 16px;
+  transition: color 0.3s ease-in-out;
+}
+
+/* Hover effect for main menu items (text color only) */
+#main-nav ul li a:hover {
+  color: #ff5733; /* Orange text on hover */
+}
+
+/* Keep E-Library orange when dropdown is open */
+#main-nav ul li.lib:hover > a {
+  color: #8b1b29; /* Orange text when dropdown is visible */
+}
+
+/* Dropdown styles */
+#main-nav ul li .dropdown {
+  display: none; /* Hidden by default */
+  position: absolute;
+  background-color: #fff; /* White background for dropdown */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  z-index: 1000;
+  border-radius: 4px; /* Rounded corners */
+}
+
+#main-nav ul li .dropdown li {
+  width: 200px; /* Fixed width for dropdown items */
+  text-align: left;
+}
+
+#main-nav ul li .dropdown li a {
+  padding: 10px 15px;
+  color: #333; /* Dark text for dropdown items */
+  font-size: 14px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Hover effect for dropdown items */
+#main-nav ul li .dropdown li a:hover {
+  background-color: #f0f0f0; /* Light grey on hover */
+  color: #8b1b29; /* Blue text on hover */
+}
+
+/* Show dropdown on hover */
+#main-nav ul li.lib:hover .dropdown {
+  display: block;
+}
+
+/* Navbar alignment */
+.navbar ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navbar ul li {
+  display: inline-block;
+  margin-right: 15px;
+}

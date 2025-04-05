@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Equal Width Headers</title>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        margin-top: 200px;
+      }
+
+      .profile-container {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        width: 80%;
+        max-width: 900px;
+        padding: 30px;
+        margin: 40px 170px 20px;
+        font-size: 14px;
+      }
+
+      .profile-container h3 {
+        color: #8b1b29;
+        border-bottom: 2px solid #8b1b29;
+        font-size: 18px;
+        padding-bottom: 5px;
+        margin-bottom: 15px;
+      }
+
+      .form-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .form-details label {
+        font-weight: bold;
+        color: #333;
+      }
+
+      .form-details input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      .update button[type="submit"] {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #8b1b29;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .update button[type="submit"]:hover {
+        background-color: #6f1623;
+      }
+      * Notifications Section */ .notifications {
+        margin-top: 30px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #e9ecef;
+      }
+
+      .notification {
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #8b1b29;
+        border-radius: 5px;
+        background-color: #fff;
+      }
+      .icon-button {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        color: #333333;
+        background: #dddddd;
+        border: none;
+        outline: none;
+        border-radius: 50%;
+      }
+      .icon-button:hover {
+        cursor: pointer;
+      }
+      .icon-button:active {
+        background: #cccccc;
+      }
+      .icon-button__badge {
+        position: absolute;
+        top: -8px;
+        right: -2px;
+        width: 20px; /* Adjust width */
+        height: 20px; /* Adjust height */
+        background: red;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        font-size: 14px; /* Adjust size as needed */
+        font-weight: bold; /* Optional: make the exclamation mark bold */
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-content">
+        <div class="white-header">
+          <img src="/static/logo.png" alt="Alverno College Logo" class="logo" />
+          <h2>
+            <b>GOKARAJU LAILAVATHI<br />ENGINEERING COLLEGE</b>
+          </h2>
+        </div>
+        <div class="header-text">
+          <div class="red-header"></div>
+          <div class="green-header">
+            <nav>
+              <a href="{{ url_for('admin_profile') }}" class="tab1">Profile</a>
+              <a href="{{ url_for('admin_academic_result') }}" class="tab1"
+                >Academic Results</a
+              >
+              <a href="{{ url_for('admin_edit_profile') }}" class="tab1 active"
+                >Edit Profile</a
+              >
+              <a
+                href="{{ url_for('admin_edit_academic_results') }}"
+                class="tab1"
+                >Edit Academic Results</a
+              >
+
+              <form style="display: inline">
+                <button
+                  type="button"
+                  class="apply-now"
+                  onclick="window.location.href='http://127.0.0.1:5000/admin_student';"
+                >
+                  Back
+                </button>
+              </form>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <div class="rheader">
+        <h3><b> Edit Student Profile</b></h3>
+      </div>
+    </header>
+
+    <div class="profile-container">
+      <form method="POST">
+        <!-- Personal Information Section -->
+        <!-- Updated Personal Information Section -->
+        <!-- Updated Personal Information Section -->
+        <div class="profile-section">
+          <h3><b>Personal Information</b></h3>
+          <div class="form-details">
+            <label for="Admission No">Admission Number:</label>
+            <input
+              type="text"
+              id="Admission No"
+              name="Admission No"
+              value="{{ profile['Admission No'] }}"
+              required
+            />
+
+            <label for="roll_number">Roll Number:</label>
+            <input
+              type="text"
+              id="roll_number"
+              name="roll_number"
+              value="{{ profile['roll_number'] }}"
+              required
+            />
+
+            <label for="STUDENT NAME">Student Name:</label>
+            <input
+              type="text"
+              id="STUDENT NAME"
+              name="STUDENT NAME"
+              value="{{ profile['STUDENT NAME'] }}"
+              required
+            />
+
+            <label for="Branch">Branch:</label>
+            <input
+              type="text"
+              id="Branch"
+              name="Branch"
+              value="{{ profile['Branch'] }}"
+              required
+            />
+
+            <label for="Section">Section:</label>
+            <input
+              type="text"
+              id="Section"
+              name="Section"
+              value="{{ profile['Section'] }}"
+              required
+            />
+
+            <label for="Rank">Rank:</label>
+            <input
+              type="text"
+              id="Rank"
+              name="Rank"
+              value="{{ profile['Rank'] }}"
+              required
+            />
+
+            <label for="Hall Ticket No">Hall Ticket No:</label>
+            <input
+              type="text"
+              id="Hall Ticket No"
+              name="Hall Ticket No"
+              value="{{ profile['Hall Ticket No'] }}"
+              required
+            />
+
+            <label for="STUDENT MOBILE">Student Mobile:</label>
+            <input
+              type="text"
+              id="STUDENT MOBILE"
+              name="STUDENT MOBILE"
+              value="{{ profile['STUDENT MOBILE'] }}"
+              required
+            />
+
+            <label for="FATHER MOBILE">Father Mobile:</label>
+            <input
+              type="text"
+              name="FATHER MOBILE"
+              value="{{ profile['FATHER MOBILE'] }}"
+              required
+            />
+
+            <label for="MOTHER MOBILE">Mother Mobile:</label>
+            <input
+              type="text"
+              name="MOTHER MOBILE"
+              value="{{ profile['MOTHER MOBILE'] }}"
+              required
+            />
+
+            <label for="Fee Reimb">Fee Reimbursement:</label>
+            <input
+              type="text"
+              id="Fee Reimb"
+              name="Fee Reimb"
+              value="{{ profile['Fee Reimb'] }}"
+              required
+            />
+
+            <label for="Date of Willingness">Date of Willingness:</label>
+            <input
+              type="text"
+              id="Date of Willingness"
+              name="Date of Willingness"
+              value="{{ profile['Date of Willingness'] }}"
+              required
+            />
+
+            <label for="Seat Category">Seat Category:</label>
+            <input
+              type="text"
+              id="Seat Category"
+              name="Seat Category"
+              value="{{ profile['Seat Category'] }}"
+              required
+            />
+
+            <label for="Sub-Caste">Sub Caste:</label>
+            <input
+              type="text"
+              id="Sub-Caste"
+              name="Sub-Caste"
+              value="{{ profile['Sub-Caste'] }}"
+            />
+
+            <label for="Special Category (CAP/NCC)"
+              >Special Category (CAP/NCC):</label
+            >
+            <input
+              type="text"
+              id="Special Category (CAP/NCC)"
+              name="Special Category (CAP/NCC)"
+              value="{{ profile['Special Category (CAP/NCC)'] }}"
+            />
+
+            <label for="Sex">Gender:</label>
+            <input
+              type="text"
+              id="Sex"
+              name="Sex"
+              value="{{ profile['Sex'] }}"
+              required
+            />
+
+            <label for="NATIONALITY">Nationality:</label>
+            <input
+              type="text"
+              id="NATIONALITY"
+              name="NATIONALITY"
+              value="{{ profile['NATIONALITY'] }}"
+              required
+            />
+
+            <label for="DATE OF BIRTH (MM/DD/YYYY)">Date of Birth:</label>
+            <input
+              type="text"
+              id="DATE OF BIRTH (MM/DD/YYYY)"
+              name="DATE OF BIRTH (MM/DD/YYYY)"
+              value="{{ profile['DATE OF BIRTH (MM/DD/YYYY)'] }}"
+              required
+            />
+
+            <label for="AADHAAR CARD NO">Aadhaar Number:</label>
+            <input
+              type="text"
+              id="AADHAAR CARD NO"
+              name="AADHAAR CARD NO"
+              value="{{ profile['AADHAAR CARD NO'] }}"
+              required
+            />
+
+            <label for="Email id">Email ID:</label>
+            <input
+              type="text"
+              id="Email id"
+              name="Email id"
+              value="{{ profile['Email id'] }}"
+            />
+
+            <label for="RELIGION">Religion:</label>
+            <input
+              type="text"
+              id="RELIGION"
+              name="RELIGION"
+              value="{{ profile['RELIGION'] }}"
+            />
+
+            <label for="FATHER NAME">Father Name:</label>
+            <input
+              type="text"
+              name="FATHER NAME"
+              value="{{ profile['FATHER NAME'] }}"
+              required
+            />
+
+            <label for="MOTHER NAME">Mother Name:</label>
+            <input
+              type="text"
+              name="MOTHER NAME"
+              value="{{ profile['MOTHER NAME'] }}"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Education Information Section -->
+        <!-- Updated Academic Information Section -->
+        <div class="academic-section">
+          <h3><b>Academic Information</b></h3>
+          <div class="form-details">
+            <label for="INTER BOARD & YEAR">Intermediate Board & Year:</label>
+            <input
+              type="text"
+              id="INTER BOARD & YEAR"
+              name="INTER BOARD & YEAR"
+              value="{{ profile['INTER BOARD & YEAR'] }}"
+              required
+            />
+
+            <label for="Group(Intermediate)">Intermediate Group:</label>
+            <input
+              type="text"
+              id="Group(Intermediate)"
+              name="Group(Intermediate)"
+              value="{{ profile['Group(Intermediate)'] }}"
+              required
+            />
+
+            <label for="INTER MARKS">Intermediate Marks:</label>
+            <input
+              type="text"
+              id="INTER MARKS"
+              name="INTER MARKS"
+              value="{{ profile['INTER MARKS'] }}"
+              required
+            />
+
+            <label for="INTER TOTAL MARKS">Intermediate Total Marks:</label>
+            <input
+              type="text"
+              id="INTER TOTAL MARKS"
+              name="INTER TOTAL MARKS"
+              value="{{ profile['INTER TOTAL MARKS'] }}"
+              required
+            />
+
+            <label for="SSC BOARD & YEAR">SSC Board & Year:</label>
+            <input
+              type="text"
+              id="SSC BOARD & YEAR"
+              name="SSC BOARD & YEAR"
+              value="{{ profile['SSC BOARD & YEAR'] }}"
+              required
+            />
+
+            <label for="SSC/ CBSE  Cert. No">SSC/CBSE Certificate No.:</label>
+            <input
+              type="text"
+              id="SSC/ CBSE  Cert. No"
+              name="SSC/ CBSE  Cert. No"
+              value="{{ profile['SSC/ CBSE  Cert. No'] }}"
+            />
+
+            <label for="SSC MARKS">SSC Marks:</label>
+            <input
+              type="text"
+              id="SSC MARKS"
+              name="SSC MARKS"
+              value="{{ profile['SSC MARKS'] }}"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Updated Parent and Address Information Section -->
+        <div class="personal-section">
+          <h3><b>Parent Details</b></h3>
+          <div class="form-details">
+            <label for="FATHER NAME">Father Name:</label>
+            <input
+              type="text"
+              id="FATHER NAME"
+              name="FATHER NAME"
+              value="{{ profile['FATHER NAME'] }}"
+              required
+            />
+
+            <label for="MOTHER NAME">Mother Name:</label>
+            <input
+              type="text"
+              id="MOTHER NAME"
+              name="MOTHER NAME"
+              value="{{ profile['MOTHER NAME'] }}"
+              required
+            />
+
+            <label for="FATHER MOBILE">Father Mobile:</label>
+            <input
+              type="text"
+              id="FATHER MOBILE"
+              name="FATHER MOBILE"
+              value="{{ profile['FATHER MOBILE'] }}"
+              required
+            />
+
+            <label for="MOTHER MOBILE">Mother Mobile:</label>
+            <input
+              type="text"
+              id="MOTHER MOBILE"
+              name="MOTHER MOBILE"
+              value="{{ profile['MOTHER MOBILE'] }}"
+              required
+            />
+          </div>
+
+          <h3><b>Address Information</b></h3>
+          <div class="form-details">
+            <label for="PERMANENT ADDRESS">Permanent Address:</label>
+            <textarea id="PERMANENT ADDRESS" name="PERMANENT ADDRESS" required>
+{{ profile['PERMANENT ADDRESS'] }}</textarea
+            >
+
+            <label for="CORRESPONDENCE ADDRESS">Correspondence Address:</label>
+            <textarea
+              id="CORRESPONDENCE ADDRESS"
+              name="CORRESPONDENCE ADDRESS"
+              required
+            >
+{{ profile['CORRESPONDENCE ADDRESS'] }}</textarea
+            >
+
+            <label for="PINCODE">Pincode:</label>
+            <input
+              type="text"
+              id="PINCODE"
+              name="PINCODE"
+              value="{{ profile['PINCODE'] }}"
+              required
+            />
+          </div>
+
+          <h3><b>Other Information</b></h3>
+          <div class="form-details">
+            <label for="BLOOD GROUP">Blood Group:</label>
+            <input
+              type="text"
+              id="BLOOD GROUP"
+              name="BLOOD GROUP"
+              value="{{ profile['BLOOD GROUP'] }}"
+              required
+            />
+
+            <label for="IDENTIFICATION MARKS-1">Identification Mark 1:</label>
+            <input
+              type="text"
+              id="IDENTIFICATION MARKS-1"
+              name="IDENTIFICATION MARKS-1"
+              value="{{ profile['IDENTIFICATION MARKS-1'] }}"
+              required
+            />
+
+            <label for="IDENTIFICATION MARKS-2">Identification Mark 2:</label>
+            <input
+              type="text"
+              id="IDENTIFICATION MARKS-2"
+              name="IDENTIFICATION MARKS-2"
+              value="{{ profile['IDENTIFICATION MARKS-2'] }}"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="update">
+          <button type="submit" class="submit-btn">Update Profile</button>
+        </div>
+      </form>
+    </div>
+  </body>
+
+  <footer>
+    <p>Footer content here. &copy; 2025</p>
+  </footer>
+
+  <script>
+    function toggleDropdown() {
+      document.getElementById("dropdown").classList.toggle("show");
+    }
+
+    window.onclick = function (event) {
+      if (!event.target.matches(".menu-icon")) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        for (var i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains("show")) {
+            openDropdown.classList.remove("show");
+          }
+        }
+      }
+    };
+  </script>
+</html>

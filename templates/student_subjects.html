@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile Details</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Your additional styles from the second code */
+
+
+        body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;  /* Keep it vertically centered */
+}
+
+.main-content {
+    margin-top: 50px; /* Adjust the value as needed */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-container {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 500px;  /* Make it smaller */
+    padding: 30px;
+    margin-top: 100px;  /* Space from header */
+    text-align: center;
+    position: relative;
+}
+
+.profile-container h2 {
+    color: #333;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Aligns all form elements to the left */
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+button {
+    background-color: #8b1b29;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #a12d36;
+}
+
+.message {
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 10px; /* Space below messages */
+}
+
+.success-message {
+    color: green;
+    background-color: #d4edda;
+    border: 1px solid green;
+}
+
+.error-message {
+    color: red;
+    background-color: #f8d7da;
+    border: 1px solid red;
+}
+/* Styling for the Faculty & Subjects header */
+/* Styling for the Faculty & Subjects header */
+h2 {
+    text-align: center;
+    color: #8b1b29;
+    font-size: 26px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    display: block; /* Ensures it remains on top */
+}
+
+
+/* Table Styling */
+table {
+    width: 90%;
+    margin: 0 auto; /* Centering */
+    border-collapse: collapse;
+    background-color: #ffffff;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Table Header */
+th {
+    background-color: #8b1b29;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-size: 16px;
+}
+
+/* Table Rows */
+td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Alternating Row Colors */
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Hover Effect */
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+    table {
+        width: 100%;
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+}
+
+
+
+
+
+
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="white-header">
+                <img src="/static/logo.png" alt="Alverno College Logo" class="logo" />
+                <h2>
+                    <b>GOKARAJU LAILAVATHI<br />ENGINEERING COLLEGE</b>
+                </h2>
+            </div>
+            <div class="header-text">
+                <div class="red-header"></div>
+                <div class="green-header">
+                    <nav>
+                        <a href="{{ url_for('profile') }}" class="tab1">Profile</a>
+                        <a href="{{ url_for('academic_result') }}" class="tab1">Academic Results</a>
+                        <a id="electiveLink" href="{{ url_for('show_electives') }}" class="tab1 ">Elective Form</a>
+                        <a href="{{ url_for('student_subjects') }}" class="tab1 active">Subjects</a>
+                        <div id="main-nav" class="stellarnav" align="center">
+                            <ul>
+                                <li class="lib tab1">
+                                    <a href="#">E-Library</a>
+                                    <ul class="dropdown">
+                                        <li>
+                                            <a href="https://ndl.iitkgp.ac.in/" target="_blank">National Library</a>
+                                        </li>
+                                        <li>
+                                            <a href="https://glwec.bestbookbuddies.com/" target="_blank">College Library</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <a href="{{ url_for('view_notifications') }}" class="icon-button">
+                            <span class="material-icons">notifications</span>
+                        </a>
+                        <form action="http://127.0.0.1:5000/logout" method="POST" style="display: inline">
+                            <button type="submit" class="apply-now">Logout</button>
+                        </form>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="rheader">
+            <h3><b>Faculty & Subjects</b></h3>
+        </div>
+    </header>
+<br>
+<br>
+
+
+{% if faculty_subjects %}
+    <table>
+        <tr>
+            <th>Faculty Name</th>
+            <th>Subject Name</th>
+            <th>Credits</th>
+            <th>Elective</th>
+            <th>Year</th>
+            <th>Section</th>
+        </tr>
+        {% for row in faculty_subjects %}
+        <tr>
+            <td>{{ row.faculty_name }}</td>
+            <td>{{ row.subject_name }}</td>
+            <td>{{ row.credits }}</td>
+            <td>{{ row.elective }}</td>
+            <td>{{ row.year }}</td>
+            <td>{{ row.section }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>No subjects assigned for your section.</p>
+{% endif %}
+
+
+</body>
+</html>

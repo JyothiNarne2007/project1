@@ -1,0 +1,1685 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HOD Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.0/dist/sweetalert2.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+
+    <style>
+      #facultyAssignmentsTable {
+    width: 100%;
+    margin-top: 10px;
+    border-collapse: collapse;
+}
+
+#facultyAssignmentsTable th, #facultyAssignmentsTable td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid black;
+}
+
+#facultyAssignmentsTable th {
+    font-weight: bold;
+}
+
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-content">
+        <div class="white-header">
+          <img src="/static/logo.png" alt="Alverno College Logo" class="logo" />
+          <h2>
+            <b>GOKARAJU LAILAVATHI<br />ENGINEERING COLLEGE</b>
+          </h2>
+        </div>
+        <div class="header-text">
+          <div class="red-header">
+            {% if session.get('faculty_name') and session.get('roles') %}
+            <span>
+              Welcome, {{ session['faculty_name'] }} [ {% if 'super_admin' in
+              session['roles'] %} Super Admin {% elif 'e-admin' in
+              session['roles'] and 'faculty' in session['roles'] %} E-Admin {%
+              elif 'hod' in session['roles'] and 'faculty' in session['roles']
+              %} HOD {% elif 'e-admin' in session['roles'] and 'hod' in
+              session['roles'] %} E-Admin, HOD {% else %} {{ session['roles'] |
+              join(', ') }} {% endif %} ]
+            </span>
+            {% endif %}
+          </div>
+
+          <div class="green-header">
+            <nav>
+              <a href="{{ url_for('home') }}" class="tab1">Home</a>
+              {% if session['roles'] %} {% for role in session['roles'] %} {% if
+              role == 'faculty' %}
+
+              <a href="{{ url_for('teacher') }}" class="tab1">Faculty</a>
+              {% elif role == 'hod' %}
+              <a href="{{ url_for('hod') }}" class="tab1 active">HOD</a>
+              {% elif role == 'e-admin' %}
+              <a href="{{ url_for('eadmin') }}" class="tab1">E-Admin</a>
+              {% elif role == 'admin' %}
+              <a href="{{ url_for('admin') }}" class="tab1">Admin</a>
+              {% endif %} {% endfor %} {% endif %}
+              <div id="main-nav" class="stellarnav" align="center">
+                <ul>
+                  <li class="lib tab1">
+                    <a href="#">E-Library</a>
+                    <ul class="dropdown">
+                      <li>
+                        <a href="https://ndl.iitkgp.ac.in/" target="_blank"
+                          >National Library</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          href="https://glwec.bestbookbuddies.com/"
+                          target="_blank"
+                          >College Library</a
+                        >
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+
+              <a
+                href="{{ url_for('manage_notifications') }}"
+                class="icon-button"
+              >
+                <span class="material-icons">notifications</span>
+              </a>
+              <form
+                action="http://127.0.0.1:5000/logout"
+                method="POST"
+                style="display: inline"
+              >
+                <button type="submit" class="apply-now">Logout</button>
+              </form>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <div class="rheader">
+        <h3><b>HOD Dashboard</b></h3>
+      </div>
+    </header>
+
+    <div class="sidebar">
+      <div class="tabs">
+        <div
+          class="tab"
+          onclick="openTab('add_subject')"
+          data-tab="add_subject"
+        >
+          Add Subject
+        </div>
+        <div
+          class="tab"
+          onclick="openTab('faculty_access')"
+          data-tab="faculty_access"
+        >
+          Faculty Access
+        </div>
+
+        <div
+          class="tab"
+          onclick="openTab('view_mid_marks_hod')"
+          data-tab="view_mid_marks_hod"
+        >
+          View Internal Marks
+        </div>
+        <div
+          class="tab"
+          onclick="openTab('download_mid_marks')"
+          data-tab="download_mid_marks"
+        >
+          Download Mid Marks
+        </div>
+
+        <div
+          class="tab"
+          onclick="openTab('admin_profile')"
+          data-tab="admin_profile"
+        >
+          View Student
+        </div>
+        <div
+          class="tab"
+          onclick="openTab('view_faculty'); window.location.href='{{ url_for('view_faculty') }}';"
+          data-tab="view_faculty"
+        >
+          View Faculty
+        </div>
+
+        <div
+          class="tab"
+          onclick="openTab('elective_access')"
+          data-tab="elective_access"
+        >
+          elective access
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div id="admin_profile" class="tab-content">
+        <div class="section">
+          <h2>View Student</h2>
+          <form id="view-user-form" action="/admin_profile" method="POST">
+            <input
+              type="text"
+              name="roll_number"
+              placeholder="Enter Roll Number"
+              required
+            />
+            <button type="submit">View Student</button>
+          </form>
+
+          {% if error_admin_profile %}
+          <div style="color: red; border: 1px solid red; padding: 10px">
+            <strong>Error:</strong> {{ error_admin_profile }}
+          </div>
+          {% endif %} {% if success_admin_profile %}
+          <div style="color: green; border: 1px solid green; padding: 10px">
+            <strong>Success:</strong> {{ success_admin_profile }}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div id="add_subject" class="tab-content active">
+        <div class="section">
+          {% if error_add_subject %}
+          <div style="color: red; border: 1px solid red; padding: 10px">
+            <strong>Error:</strong> {{ error_add_subject }}
+          </div>
+          {% endif %} {% if success_add_subject %}
+          <div style="color: green; border: 1px solid green; padding: 10px">
+            <strong>Success:</strong> {{ success_add_subject }}
+          </div>
+          {% endif %}
+
+          <h2>Create New Subject</h2>
+          <form id="course-form" action="/create_course" method="POST">
+            <label for="subject_name">Subject Name:</label>
+            <input type="text" name="subject_name" id="subject_name" required />
+
+            <label for="subject_code">Subject Code:</label>
+            <input type="text" name="subject_code" id="subject_code" required />
+
+            <label for="department_id">Department:</label>
+            <select name="department_id" id="department_id" required>
+              <option value="">Select Department</option>
+            </select>
+
+            <label for="semester">Semester:</label>
+            <select name="semester" id="semester" required>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+            </select>
+
+            <label for="credits">Credits:</label>
+            <input type="number" name="credits" id="credits" required />
+            <label for="elective">Elective Type:</label>
+            <div>
+              <input
+                type="radio"
+                id="regular"
+                name="elective"
+                value="Regular"
+                checked
+              />
+              <label for="regular">Regular</label>
+
+              <input
+                type="radio"
+                id="professional"
+                name="elective"
+                value="Professional Elective"
+              />
+              <label for="professional">Professional Elective</label>
+
+              <input
+                type="radio"
+                id="open"
+                name="elective"
+                value="Open Elective"
+              />
+              <label for="open">Open Elective</label>
+            </div>
+            <button type="submit">Create Subject</button>
+          </form>
+        </div>
+      </div>
+
+      <div id="faculty_access" class="tab-content">
+        <div class="section">
+          <!-- Display success or error messages -->
+          <div id="feedback-messages"></div>
+
+          <h1>Assign Faculty</h1>
+          <form id="assignmentForm">
+            <label for="faculty">Select Faculty:</label>
+            <select id="faculty" name="faculty_id" required style="width: 100%">
+              <option value="">Search and Select Faculty</option>
+              {% for person in faculty %}
+              <option value="{{ person['faculty_id'] }}">
+                {{ person['name'] }}
+              </option>
+              {% endfor %}
+            </select>
+            <br />
+ 
+            <h3>Previously Assigned Faculty</h3>
+
+            <table id="facultyAssignmentsTable" style="width: 100%; margin-top: 20px; display: none; border-collapse: collapse;">
+              <thead>
+                  <tr>
+                      <th>Subject</th>
+                      <th>Year</th>
+                      <th>Branch & Section</th>
+                  </tr>
+              </thead>
+              <tbody></tbody>
+          </table>
+          
+<br></br>
+            
+
+
+            <div id="assignments-container">
+              <div class="assignment-row">
+                <div class="form-row">
+                  <select class="year-dropdown" name="year" required>
+                    <option value="">Select Year</option>
+                  </select>
+                  <select class="branch-dropdown" name="branch" required>
+                    <option value="">Select Branch</option>
+                  </select>
+                  <select
+                    class="section-dropdown"
+                    name="section[]"
+                    multiple
+                    required
+                    style="height: 80px"
+                  >
+                    <option value="">Select Sections</option>
+                  </select>
+                </div>
+                <div class="form-row">
+                  <select class="semester-dropdown" name="semester" required>
+                    <option value="">Select Semester</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                  </select>
+                  <select class="subject-dropdown" name="subject_id" required>
+                    <option value="">Select Subject</option>
+                  </select>
+                </div>
+                <button type="button" class="remove-btn">Remove</button>
+              </div>
+            </div>
+
+            <button type="button" id="addMore" class="add-more">
+              Add More
+            </button>
+            <button type="submit">Assign</button>
+          </form>
+        </div>
+      </div>
+
+      <div id="view_mid_marks_hod" class="tab-content">
+        <div id="selection-method" class="section">
+          <h2>View internal marks</h2>
+
+          <div>
+            <label>
+              <input
+                type="radio"
+                name="selection_method"
+                value="branch_section"
+                onclick="toggleSelectionMethod()"
+              />
+              Branch-Section Wise
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="selection_method"
+                value="roll_number"
+                onclick="toggleSelectionMethod()"
+                checked
+              />
+              Roll Number Wise
+            </label>
+          </div>
+        </div>
+
+        <div id="branch-section-container" style="display: none">
+          <h3>Select Branch and Section</h3>
+          <form id="branch-section-form">
+            <div class="form-group">
+              <label for="branch">Branch:</label>
+              <select
+                id="branch"
+                class="form-control"
+                name="branch"
+                onchange="updateSections()"
+                required
+              >
+                <option value="" disabled selected>Select Branch</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="section">Section:</label>
+              <select id="section" class="form-control" name="section" required>
+                <option value="" disabled selected>Select Section</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="passed_out_year">Passed Out Year:</label>
+              <input
+                type="number"
+                class="form-control"
+                id="passed_out_year"
+                name="passed_out_year"
+                required
+              />
+            </div>
+
+            <button type="button" onclick="submitBranchSectionFilter()">
+              Submit
+            </button>
+          </form>
+        </div>
+
+        <div id="roll-number-container">
+          <h3>Enter Roll Number Ranges</h3>
+          <!-- Existing roll number range inputs -->
+          <form>
+            <div id="mid_roll_number_ranges">
+              <div class="form-group roll-range">
+                <label for="roll_start_mid">Roll Number Range Start:</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="roll_start_mid[]"
+                  required
+                /><br />
+                <label for="roll_end_mid">Roll Number Range End:</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="roll_end_mid[]"
+                  required
+                />
+              </div>
+            </div>
+            <button
+              type="button"
+              class="btn btn-info"
+              onclick="addRollNumberRange()"
+            >
+              Add Another Range
+            </button>
+
+            <div class="form-group">
+              <label for="passed_out_year_1">Passed Out Year:</label>
+              <input
+                type="number"
+                class="form-control"
+                id="passed_out_year_1"
+                name="passed_out_year_1"
+                required
+              />
+            </div>
+
+            <button type="button" onclick="submitMidMarksHod()">Submit</button>
+          </form>
+        </div>
+      </div>
+
+      <div id="view_faculty" class="tab-content">
+        <div class="section">
+          <h2>View Faculty</h2>
+          <!-- Search Form -->
+          <form
+            method="POST"
+            action="/view_faculty"
+            style="margin-bottom: 15px"
+          >
+            <input
+              type="text"
+              name="search"
+              placeholder="Search by name or subject"
+              value="{{ search_query }}"
+              style="padding: 8px; width: 300px; font-size: 14px"
+            />
+            <button
+              type="submit"
+              style="
+                padding: 8px 15px;
+                font-size: 14px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+              "
+            >
+              Search
+            </button>
+          </form>
+          {% if data %}
+
+          <div style="overflow-x: auto; margin-top: 10px">
+            <table
+              border="1"
+              cellspacing="0"
+              cellpadding="10"
+              style="
+                width: 100%;
+                table-layout: auto;
+                white-space: nowrap;
+                border-collapse: collapse;
+                text-align: left;
+                font-family: Arial, sans-serif;
+                font-size: 14px;
+              "
+            >
+              <thead>
+                <tr style="background-color: #f4f4f4">
+                  <th style="padding: 10px">Faculty ID</th>
+                  <th style="padding: 10px">First Name</th>
+                  <th style="padding: 10px">Last Name</th>
+                  <th style="padding: 10px">Email</th>
+                  <th style="padding: 10px">Phone Number</th>
+                  <th style="padding: 10px">Department ID</th>
+                  <th style="padding: 10px">Designation</th>
+                  <th style="padding: 10px">Joining Date</th>
+                  <th style="padding: 10px">Salary</th>
+                  <th style="padding: 10px">Roles</th>
+                  <th style="padding: 10px">Status</th>
+                  <th style="padding: 10px">Sections & Subjects Assigned</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in data %}
+                <tr style="border-bottom: 1px solid #ddd">
+                  <td style="padding: 10px">{{ row.faculty_id }}</td>
+                  <td style="padding: 10px">{{ row.first_name }}</td>
+                  <td style="padding: 10px">{{ row.last_name }}</td>
+                  <td style="padding: 10px">{{ row.email }}</td>
+                  <td style="padding: 10px">{{ row.phone_number }}</td>
+                  <td style="padding: 10px">{{ row.department_id }}</td>
+                  <td style="padding: 10px">{{ row.designation }}</td>
+                  <td style="padding: 10px">{{ row.joining_date }}</td>
+                  <td style="padding: 10px">{{ row.salary }}</td>
+                  <td style="padding: 10px">{{ row.roles }}</td>
+                  <td style="padding: 10px">{{ row.status }}</td>
+                  <td style="padding: 10px">{{ row.assessment_data }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <p>No data available to display.</p>
+          {% endif %}
+          <br />
+          <form method="get" action="/view_faculty">
+            <button
+              type="submit"
+              name="download"
+              value="true"
+              class="download-button"
+            >
+              Download All Faculty Details
+            </button>
+          </form>
+          {% if error_faculty_view %}
+          <div style="color: red; border: 1px solid red; padding: 10px">
+            <strong>Error:</strong> {{ error_faculty_view }}
+          </div>
+          {% endif %} {% if success_faculty_view %}
+          <div style="color: green; border: 1px solid green; padding: 10px">
+            <strong>Success:</strong> {{ success_faculty_view }}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div id="elective_access" class="tab-content">
+        <div class="section">
+          <h2>Elective Access</h2>
+          <!-- Search Form -->
+
+
+          {% if error_faculty_view %}
+          <div style="color: red; border: 1px solid red; padding: 10px">
+            <strong>Error:</strong> {{ error_faculty_view }}
+          </div>
+          {% endif %} {% if success_faculty_view %}
+          <div style="color: green; border: 1px solid green; padding: 10px">
+            <strong>Success:</strong> {{ success_faculty_view }}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div id="download_mid_marks" class="tab-content">
+        <div class="section">
+          <h2>Download Mid Marks</h2>
+
+          {% if error_download_mid_marks %}
+          <div style="color: red; border: 1px solid red; padding: 10px">
+            <strong>Error:</strong> {{ error_download_mid_marks }}
+          </div>
+          {% endif %} {% if success_download_mid_marks %}
+          <div style="color: green; border: 1px solid green; padding: 10px">
+            <strong>Success:</strong> {{ success_download_mid_marks }}
+          </div>
+          {% endif %}
+
+          <form
+            id="download-mid-marks-form"
+            method="POST"
+            action="/download_mid_marks"
+          >
+            <!-- Roll Number Ranges -->
+            <div id="mid_roll_number_ranges_1">
+              <div class="form-group roll-range">
+                <label for="roll_start_mid">Roll Number Range Start:</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="roll_start_mid[]"
+                  required
+                /><br />
+                <label for="roll_end_mid">Roll Number Range End:</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="roll_end_mid[]"
+                  required
+                />
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-info" onclick="addRange()">
+              Add Another Range
+            </button>
+
+            <!-- Passed Out Year -->
+            <div class="form-group">
+              <label for="passed_out_year">Passed Out Year:</label>
+              <input
+                type="number"
+                class="form-control"
+                name="passed_out_year"
+                required
+              />
+            </div>
+            <div>
+              <input type="checkbox" name="columns[]" value="name" /> Name
+            </div>
+            <!-- Dropdown to select General or Subject Wise -->
+            <div class="form-group">
+              <label for="view_option">Select View Option:</label>
+              <select
+                id="download_type"
+                class="form-control"
+                name="download_type"
+                onchange="toggleView()"
+              >
+                <option value="subject_wise">Subject Wise</option>
+              </select>
+            </div>
+
+            <!-- Subject Wise View (Download Button) -->
+            <div id="subject_wise_view" class="form-group"></div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-success">
+              Download Mid Marks
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <p>© Copyright 2025 - All Rights Reserved www.glwec.in</p>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
+    <script>
+
+
+$(document).ready(function () {
+    $("#faculty").change(function () {
+        let facultyId = $(this).val();
+        if (!facultyId) {
+            $("#facultyAssignmentsTable").hide();
+            return;
+        }
+
+        $.ajax({
+            url: "/get_faculty_assignments",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ faculty_id: facultyId }),
+            success: function (data) {
+                let tableBody = $("#facultyAssignmentsTable tbody");
+                tableBody.empty(); // Clear previous data
+
+                if (data.length === 0) {
+                    $("#facultyAssignmentsTable").hide();
+                    return;
+                }
+
+                data.forEach((row) => {
+                    tableBody.append(`
+                        <tr>
+                            <td>${row.subject}</td>
+                            <td>${row.year}</td>
+                            <td>${row.branch_section}</td>
+                        </tr>
+                    `);
+                });
+
+                $("#facultyAssignmentsTable").show();
+            },
+            error: function () {
+                $("#facultyAssignmentsTable").hide();
+            }
+        });
+    });
+});
+
+
+
+
+
+
+      $(document).ready(function () {
+        // Initialize Select2
+        $(".section-dropdown").select2({
+          placeholder: "Select Sections",
+          allowClear: true,
+        });
+
+        // Handle "Select All" option
+        $(".section-dropdown").on("select2:select", function (e) {
+          if (e.params.data.id === "all") {
+            $(".section-dropdown")
+              .val(
+                $(".section-dropdown option:not(:first)")
+                  .map(function () {
+                    return $(this).val();
+                  })
+                  .get()
+              )
+              .trigger("change");
+          }
+        });
+      });
+
+      $(document).ready(function () {
+        $("#faculty").select2({
+          placeholder: "Search Faculty",
+          allowClear: true,
+        });
+
+        // Function to populate years dropdown
+        function populateYears(dropdown) {
+          $.get("/get_years_fa", function (data) {
+            dropdown.empty().append('<option value="">Select Year</option>');
+            data.forEach((year) => {
+              dropdown.append(`<option value="${year}">${year}</option>`);
+            });
+          });
+        }
+
+        // Initial population of years
+        populateYears($(".year-dropdown"));
+
+        // Event delegation for dynamic dropdowns
+        $(document).on("change", ".year-dropdown", function () {
+          const year = $(this).val();
+          const branchDropdown = $(this)
+            .closest(".assignment-row")
+            .find(".branch-dropdown");
+          const sectionDropdown = $(this)
+            .closest(".assignment-row")
+            .find(".section-dropdown");
+
+          branchDropdown
+            .empty()
+            .append('<option value="">Select Branch</option>');
+          sectionDropdown
+            .empty()
+            .append('<option value="">Select Section</option>');
+
+          if (year) {
+            $.ajax({
+              url: "/get_branches_fa",
+              method: "POST",
+              contentType: "application/json",
+              data: JSON.stringify({ year }),
+              success: function (data) {
+                data.forEach((branch) => {
+                  branchDropdown.append(
+                    `<option value="${branch}">${branch}</option>`
+                  );
+                });
+              },
+            });
+          }
+        });
+
+        $(document).on("change", ".branch-dropdown", function () {
+          const year = $(this)
+            .closest(".assignment-row")
+            .find(".year-dropdown")
+            .val();
+          const branch = $(this).val();
+          const sectionDropdown = $(this)
+            .closest(".assignment-row")
+            .find(".section-dropdown");
+
+          sectionDropdown
+            .empty()
+            .append('<option value="">Select Sections</option>');
+
+          if (year && branch) {
+            $.ajax({
+              url: "/get_sections_fa",
+              method: "POST",
+              contentType: "application/json",
+              data: JSON.stringify({ year, branch }),
+              success: function (data) {
+                data.forEach((section) => {
+                  sectionDropdown.append(
+                    `<option value="${section}">${section}</option>`
+                  );
+                });
+              },
+            });
+          }
+        });
+
+        $(document).on("change", ".semester-dropdown", function () {
+          const branch = $(this)
+            .closest(".assignment-row")
+            .find(".branch-dropdown")
+            .val();
+          const semester = $(this).val();
+          const subjectDropdown = $(this)
+            .closest(".assignment-row")
+            .find(".subject-dropdown");
+
+          subjectDropdown
+            .empty()
+            .append('<option value="">Select Subject</option>');
+
+          if (branch && semester) {
+            $.ajax({
+              url: "/get_subjects_by_branch_and_semester_fa",
+              method: "POST",
+              contentType: "application/json",
+              data: JSON.stringify({ branch, semester }),
+              success: function (data) {
+                data.forEach((subject) => {
+                  subjectDropdown.append(
+                    `<option value="${subject.subject_id}">${subject.subject_name}</option>`
+                  );
+                });
+              },
+            });
+          }
+        });
+
+        // Add More functionality
+        $("#addMore").click(function () {
+          const newAssignmentRow = `
+                    <div class="assignment-row">
+                        <div class="form-row">
+                            <select class="year-dropdown" name="year" required>
+                                <option value="">Select Year</option>
+                            </select>
+                            <select class="branch-dropdown" name="branch" required>
+                                <option value="">Select Branch</option>
+                            </select>
+                            <select
+                    class="section-dropdown"
+                    name="section[]"
+                    multiple
+                    required
+                    style="height: 80px"
+                  >
+                    <option value="">Select Sections</option>
+                  </select>
+                        </div>
+                        <div class="form-row">
+                            <select class="semester-dropdown" name="semester" required>
+                                <option value="">Select Semester</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                            </select>
+                            <select class="subject-dropdown" name="subject_id" required>
+                                <option value="">Select Subject</option>
+                            </select>
+                        </div>
+                        <button type="button" class="remove-btn">Remove</button>
+                    </div>
+                `;
+          $("#assignments-container").append(newAssignmentRow);
+          populateYears(
+            $("#assignments-container").find(".year-dropdown").last()
+          );
+        });
+
+        // Remove row functionality
+        $(document).on("click", ".remove-btn", function () {
+          $(this).closest(".assignment-row").remove();
+        });
+
+        // Handle form submission
+        $("#assignmentForm").submit(function (e) {
+          e.preventDefault();
+          const assignments = [];
+
+          $("#assignments-container .assignment-row").each(function () {
+            const year = $(this).find(".year-dropdown").val();
+            const branch = $(this).find(".branch-dropdown").val();
+            const sections = $(this).find(".section-dropdown").val() || []; // Get multiple selected values
+            const semester = $(this).find(".semester-dropdown").val();
+            const subject = $(this).find(".subject-dropdown").val();
+
+            if (
+              !year ||
+              !branch ||
+              sections.length === 0 ||
+              !semester ||
+              !subject
+            ) {
+              $("#feedback")
+                .text("All fields are required for each assignment.")
+                .css("color", "red");
+              return false;
+            }
+
+            sections.forEach((section) => {
+              assignments.push({
+                year_branch_section: `${year}-${branch}-${section}`,
+                semester,
+                subject_id: subject,
+              });
+            });
+          });
+
+          const data = {
+            faculty_id: $("#faculty").val(),
+            assignments,
+          };
+
+          $.ajax({
+            url: "/assign_faculty_fa",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function (response) {
+              $("#feedback").text(response.success).css("color", "green");
+            },
+            error: function (error) {
+              $("#feedback")
+                .text("Error assigning faculty.")
+                .css("color", "red");
+            },
+          });
+        });
+      });
+      // JavaScript function for form submission
+      function submitBranchSectionFilter() {
+        const branch = document.getElementById("branch").value;
+        const section = document.getElementById("section").value;
+        const passedOutYear = document.getElementById("passed_out_year").value;
+
+        if (!branch || !section || !passedOutYear) {
+          alert("Please fill all fields.");
+          return;
+        }
+
+        // Redirect to backend route with query parameters
+        const queryString = `branch=${branch}&section=${section}&passed_out_year=${passedOutYear}`;
+        window.location.href = `/get_students_results_branch_section?${queryString}`;
+      }
+
+      function toggleSelectionMethod() {
+        const selectedMethod = document.querySelector(
+          "input[name='selection_method']:checked"
+        ).value;
+
+        const branchSectionContainer = document.getElementById(
+          "branch-section-container"
+        );
+        const rollNumberContainer = document.getElementById(
+          "roll-number-container"
+        );
+
+        if (selectedMethod === "branch_section") {
+          branchSectionContainer.style.display = "block";
+          rollNumberContainer.style.display = "none";
+        } else if (selectedMethod === "roll_number") {
+          branchSectionContainer.style.display = "none";
+          rollNumberContainer.style.display = "block";
+        }
+      }
+      document.addEventListener("DOMContentLoaded", function () {
+        // Fetch branches and sections from the server
+        fetch("/get_branch_sections_hod")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Failed to fetch branch and section data.");
+            }
+            return response.json();
+          })
+          .then((branchSections) => {
+            populateBranchDropdown(branchSections);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      });
+
+      function populateBranchDropdown(branchSections) {
+        const branchDropdown = document.getElementById("branch");
+
+        // Populate branches
+        branchDropdown.innerHTML =
+          '<option value="" disabled selected>Select Branch</option>';
+        branchSections.forEach(({ branch }) => {
+          const option = document.createElement("option");
+          option.value = branch;
+          option.textContent = branch;
+          branchDropdown.appendChild(option);
+        });
+
+        // Attach an event listener to update sections when a branch is selected
+        branchDropdown.addEventListener("change", function () {
+          updateSections(branchSections);
+        });
+      }
+
+      function updateSections(branchSections) {
+        const branchDropdown = document.getElementById("branch");
+        const sectionDropdown = document.getElementById("section");
+
+        const selectedBranch = branchDropdown.value;
+
+        // Find sections for the selected branch
+        const branchData = branchSections.find(
+          (branch) => branch.branch === selectedBranch
+        );
+        const sections = branchData ? branchData.sections.split(",") : [];
+
+        // Clear and populate the section dropdown
+        sectionDropdown.innerHTML =
+          '<option value="" disabled selected>Select Section</option>';
+        sections.forEach((section) => {
+          const trimmedSection = section.replace(/[\[\]"]/g, "").trim(); // Remove unwanted characters
+          const option = document.createElement("option");
+          option.value = trimmedSection;
+          option.textContent = trimmedSection;
+          sectionDropdown.appendChild(option);
+        });
+      }
+
+      function viewMidMarks() {
+        var form = document.getElementById("download-mid-marks-form");
+        form.action = "/view_mid_marks"; // Change action to view_mid_marks
+        form.submit(); // Submit the form to view the mid marks
+      }
+
+      // Ensure DOM is fully loaded before running this function
+      function toggleView() {
+        // Get the value of the select element (either 'general' or 'subject_wise')
+        var viewOption = document.getElementById("download_type").value;
+        console.log("Selected view option:", viewOption);
+
+        // Get all the checkboxes
+        var checkboxes = document.querySelectorAll(
+          "#general_view input[type='checkbox']"
+        );
+
+        if (viewOption === "general") {
+          // If "General" is selected, enable all checkboxes
+          checkboxes.forEach(function (checkbox) {
+            checkbox.disabled = false; // Enable the checkbox
+          });
+        } else if (viewOption === "subject_wise") {
+          // If "Subject Wise" is selected, disable all except 'subject_name'
+          checkboxes.forEach(function (checkbox) {
+            if (checkbox.value !== "name") {
+              checkbox.disabled = true; // Disable the checkbox
+            } else {
+              checkbox.disabled = false; // Keep 'subject_name' enabled
+            }
+          });
+        }
+      }
+
+      // Initial call to set the correct view based on the selected option
+      document.addEventListener("DOMContentLoaded", function () {
+        toggleView(); // Call toggleView once the DOM is loaded
+      });
+      // Submit logic for mid marks HOD
+      function submitMidMarksHod() {
+        const rollStartInputs = document.querySelectorAll(
+          '[name="roll_start_mid[]"]'
+        );
+        const rollEndInputs = document.querySelectorAll(
+          '[name="roll_end_mid[]"]'
+        );
+        const passedOutYear =
+          document.getElementById("passed_out_year_1").value;
+
+        // Collect all roll ranges
+        const rollRanges = [];
+        rollStartInputs.forEach((startInput, index) => {
+          const start = startInput.value;
+          const end = rollEndInputs[index].value;
+          rollRanges.push({ start, end });
+        });
+
+        // Form data
+        const formData = {
+          rollRanges,
+          passedOutYear,
+        };
+
+        // Redirect to the desired backend route with query parameters
+        const queryString = `roll_ranges=${JSON.stringify(
+          formData.rollRanges
+        )}&passed_out_year_1=${formData.passedOutYear}`;
+        window.location.href = `/get_students_results_hod_view?${queryString}`;
+      }
+      function removeRollNumberRange(button) {
+        const rangeToRemove = button.parentElement; // Get the parent div of the button
+        rangeToRemove.remove(); // Remove the range div
+      }
+      function addRange() {
+        var rollRangeContainer = document.getElementById(
+          "mid_roll_number_ranges_1"
+        );
+        var newRollRange = document.createElement("div");
+        newRollRange.classList.add("form-group", "roll-range");
+        newRollRange.innerHTML = `
+            <label for="roll_start_mid">Roll Number Range Start:</label>
+            <input type="number" class="form-control" name="roll_start_mid[]" required /><br />
+            <label for="roll_end_mid">Roll Number Range End:</label>
+            <input type="number" class="form-control" name="roll_end_mid[]" required />
+            <button type="button" onclick="removeRollNumberRange(this)">Remove</button>
+        `;
+        rollRangeContainer.appendChild(newRollRange);
+      }
+      function addRollNumberRange() {
+        var rollRangeContainer = document.getElementById(
+          "mid_roll_number_ranges"
+        );
+        var newRollRange = document.createElement("div");
+        newRollRange.classList.add("form-group", "roll-range");
+        newRollRange.innerHTML = `
+            <label for="roll_start_mid">Roll Number Range Start:</label>
+            <input type="number" class="form-control" name="roll_start_mid[]" required /><br />
+            <label for="roll_end_mid">Roll Number Range End:</label>
+            <input type="number" class="form-control" name="roll_end_mid[]" required />
+            <button type="button" onclick="removeRollNumberRange(this)">Remove</button>
+        `;
+        rollRangeContainer.appendChild(newRollRange);
+      }
+      $(document).ready(function () {
+        // Hide messages on page load (in case of a refresh)
+        $("#feedback-messages").empty();
+
+        // Hide messages when clicking outside the feedback messages area
+        $(document).click(function (event) {
+          // Check if the click is outside of the feedback messages container
+          if (!$(event.target).closest("#feedback-messages").length) {
+            // Hide the feedback messages
+            $("#feedback-messages").empty();
+          }
+        });
+
+        // Optionally, prevent clicks inside the feedback message area from hiding it
+        $("#feedback-messages").click(function (event) {
+          event.stopPropagation(); // Prevent click from propagating to document
+        });
+
+        // Your other existing code remains unchanged...
+      });
+
+      $(document).ready(function () {
+        // Initial display logic based on the selected option when the page loads
+        const selectedType = $("#result_type").val();
+        if (selectedType === "subject-wise") {
+          $("#subject-section").show();
+          $("#year-semester-section").hide();
+        } else if (selectedType === "all-subjects") {
+          $("#subject-section").hide();
+          $("#year-semester-section").show();
+        } else {
+          $("#subject-section").hide();
+          $("#year-semester-section").hide();
+        }
+
+        // Toggle between Subject-wise and All Subjects on change
+        $("#result_type").change(function () {
+          const selectedType = $(this).val();
+          if (selectedType === "subject-wise") {
+            $("#subject-section").show();
+            $("#year-semester-section").hide();
+          } else if (selectedType === "all-subjects") {
+            $("#subject-section").hide();
+            $("#year-semester-section").show();
+          } else {
+            $("#subject-section").hide();
+            $("#year-semester-section").hide();
+          }
+        });
+
+        // Fetch data from the backend on page load
+        $.ajax({
+          url: "/get_subjects_and_sections",
+          method: "GET",
+          success: function (data) {
+            const { subjects, assessments } = data;
+
+            // Populate the subject dropdown
+            subjects.forEach((subject) => {
+              $("#subject").append(
+                new Option(subject.subject_name, subject.subject_code)
+              );
+            });
+
+            // Handle change in subject dropdown
+            $("#subject").change(function () {
+              const selectedSubjectCode = $(this).val();
+              $("#year_branch")
+                .empty()
+                .append(
+                  '<option value="">Select Year & Branch Section</option>'
+                );
+
+              assessments.forEach((assessment) => {
+                if (assessment.subject_code === selectedSubjectCode) {
+                  const yearSections = assessment.year_sections;
+                  for (const [year, branches] of Object.entries(yearSections)) {
+                    branches.forEach((branch) => {
+                      const value = `${year}-${branch}`;
+                      $("#year_branch").append(new Option(value, value));
+                    });
+                  }
+                }
+              });
+            });
+          },
+        });
+        $.ajax({
+          url: "/get_active_years_hod", // Use the endpoint you provided
+          method: "GET",
+          success: function (data) {
+            data.forEach((yearObj) => {
+              $("#year").append(new Option(yearObj.year, yearObj.year));
+            });
+          },
+          error: function (error) {
+            console.error("Error fetching active years:", error);
+            alert("Failed to load active years. Please try again later.");
+          },
+        });
+      });
+
+      let sectionCount = 0;
+
+      // Function to initialize Select2 for dynamically added fields
+      function initializeSelect2(selector) {
+        $(selector).select2({
+          placeholder: "Select Branches & Sections",
+          allowClear: true,
+        });
+      }
+
+      // Function to dynamically add a new section
+      function addDynamicSection() {
+        sectionCount++;
+        const sectionHTML = `
+        <div class="dynamic-section" id="section-${sectionCount}">
+          <!-- Subject Selection -->
+          <div class="form-group">
+            <label for="subject-${sectionCount}">Select Subject:</label>
+            <select name="subject_code[]" id="subject-${sectionCount}" required>
+              <option value="">Select Subject</option>
+            </select>
+          </div>
+
+          <!-- Active Year Selection -->
+          <div class="form-group">
+            <label for="active_year-${sectionCount}">Select Active Year:</label>
+            <select name="active_year[]" id="active_year-${sectionCount}" required>
+              <option value="">Select Active Year</option>
+            </select>
+          </div>
+
+          <!-- Branch-Section Selection (Multiselect) -->
+          <div class="form-group">
+            <label for="branch_section-${sectionCount}">Select Branch-Section:</label>
+            <select name="branch_section[]" id="branch_section-${sectionCount}" multiple="multiple" required>
+            </select>
+          </div>
+
+          <!-- Remove Button -->
+          <button type="button" class="remove-button" onclick="removeDynamicSection(${sectionCount})">Remove</button>
+        </div>
+      `;
+
+        // Append the section above the Submit button
+        $("#dynamic-sections-container").append(sectionHTML);
+
+        // Populate the dropdowns with data
+        populateDropdowns(
+          `#subject-${sectionCount}`,
+          `#active_year-${sectionCount}`,
+          `#branch_section-${sectionCount}`
+        );
+      }
+
+      // Function to populate dropdowns for a specific section
+      function populateDropdowns(
+        subjectSelector,
+        yearSelector,
+        branchSelector
+      ) {
+        // Populate subjects
+        $.ajax({
+          url: "/get_subjects_hod",
+          method: "GET",
+          success: function (data) {
+            data.forEach(function (subject) {
+              $(subjectSelector).append(
+                new Option(subject.subject_name, subject.subject_code)
+              );
+            });
+          },
+        });
+
+        // Populate active years
+        $.ajax({
+          url: "/get_active_years_hod",
+          method: "GET",
+          success: function (data) {
+            data.forEach(function (year) {
+              $(yearSelector).append(new Option(year.year, year.year));
+            });
+          },
+        });
+
+        // Populate branch-sections
+        $.ajax({
+          url: "/get_branch_sections_hod",
+          method: "GET",
+          success: function (data) {
+            data.forEach(function (item) {
+              const branch = item.branch;
+              const sections = JSON.parse(item.sections);
+              sections.forEach(function (section) {
+                $(branchSelector).append(
+                  new Option(branch + " " + section, branch + " " + section)
+                );
+              });
+            });
+            initializeSelect2(branchSelector); // Initialize multi-select
+          },
+        });
+      }
+
+      // Function to remove a dynamic section
+      function removeDynamicSection(sectionId) {
+        $(`#section-${sectionId}`).remove();
+      }
+
+      // Event listener for "Add More" button
+      $("#add-more").click(function () {
+        addDynamicSection();
+      });
+
+      // Populate the Faculty dropdown on page load
+      function loadFaculty() {
+        $.ajax({
+          url: "/get_faculties", // Update to match your backend route
+          method: "GET",
+          success: function (data) {
+            const facultyDropdown = $("#faculty");
+            facultyDropdown.empty(); // Clear existing options if any
+
+            data.forEach(function (faculty) {
+              const option = new Option(faculty.name, faculty.id);
+              if (!faculty.is_faculty) {
+                option.disabled = true; // Disable non-faculty options
+                option.text += " (Not Faculty)"; // Add annotation
+              }
+              facultyDropdown.append(option);
+            });
+          },
+          error: function (error) {
+            console.error("Error loading faculties:", error);
+          },
+        });
+      }
+
+      // Form Submission logic
+      $("#faculty-form").submit(function (event) {
+        event.preventDefault();
+
+        // Clear any existing messages
+        $("#feedback-messages").empty();
+
+        const formData = {
+          faculty_id: $("#faculty").val(),
+          assessments: [],
+        };
+
+        // Collect data from all dynamic sections
+        $("#dynamic-sections-container .dynamic-section").each(function () {
+          const section = {
+            subject_code: $(this).find('select[name="subject_code[]"]').val(),
+            active_year: $(this).find('select[name="active_year[]"]').val(),
+            branch_section: $(this)
+              .find('select[name="branch_section[]"]')
+              .val(),
+          };
+          formData.assessments.push(section);
+        });
+
+        $.ajax({
+          url: "/submit_assessment_hod",
+          method: "POST",
+          contentType: "application/json",
+          data: JSON.stringify(formData),
+          success: function (response) {
+            // Clear any previous messages
+            $("#feedback-messages").empty();
+
+            if (response.error) {
+              $("#feedback-messages").html(`
+        <div style="color: red; border: 1px solid red; padding: 10px;">
+          <strong>Error:</strong> ${response.error}
+        </div>
+      `);
+            }
+            if (response.success) {
+              $("#feedback-messages").html(`
+        <div style="color: green; border: 1px solid green; padding: 10px;">
+          <strong>Success:</strong> ${response.success}
+        </div>
+      `);
+            }
+          },
+          error: function (error) {
+            console.error("AJAX Error:", error);
+          },
+        });
+      });
+
+      // Initialize the page
+      loadFaculty();
+
+      fetch("/get_departments")
+        .then((response) => response.json())
+        .then((data) => {
+          const departmentDropdown = document.getElementById("department_id");
+          data.forEach((department) => {
+            const option = document.createElement("option");
+            option.value = department.department_id;
+            option.textContent = department.department_name;
+            departmentDropdown.appendChild(option);
+          });
+        })
+        .catch((error) => console.error("Error fetching departments:", error));
+
+      const activeTab = "{{ active_tab }}";
+      if (activeTab) {
+        openTab(activeTab);
+      } else {
+        // If there's no active_tab from the server, show the default tab
+        openTab("add_subject");
+      }
+
+      // Save the active tab before form submission
+      document.addEventListener("DOMContentLoaded", function () {
+        const forms = document.querySelectorAll("form");
+        forms.forEach((form) => {
+          form.addEventListener("submit", function () {
+            const activeTab = document.querySelector(".tab.active");
+            if (activeTab) {
+              const hiddenTabInput = form.querySelector(
+                "input[name='active_tab']"
+              );
+              if (hiddenTabInput) {
+                hiddenTabInput.value = activeTab.getAttribute("data-tab");
+              }
+            }
+          });
+        });
+
+        // Restore the active tab on page load
+        const activeTabValue = "{{ active_tab }}";
+        if (activeTabValue) {
+          const tabs = document.querySelectorAll(".tab");
+          const tabContents = document.querySelectorAll(".tab-content");
+
+          tabs.forEach((tab) => tab.classList.remove("active"));
+          tabContents.forEach((content) => content.classList.remove("active"));
+
+          const activeTabElement = document.querySelector(
+            `.tab[data-tab='${activeTabValue}']`
+          );
+          const activeTabContent = document.getElementById(activeTabValue);
+
+          if (activeTabElement) activeTabElement.classList.add("active");
+          if (activeTabContent) activeTabContent.classList.add("active");
+        }
+
+        // Clear messages on click outside the form
+        document.addEventListener("click", function (event) {
+          if (!event.target.closest(".section")) {
+            const messages = document.querySelectorAll(
+              ".section div[style*='border']"
+            );
+            messages.forEach((message) => message.remove());
+          }
+        });
+      });
+
+      function openTab(tabName) {
+        const tabs = document.querySelectorAll(".tab");
+        const tabContents = document.querySelectorAll(".tab-content");
+
+        tabs.forEach((tab) => tab.classList.remove("active"));
+        tabContents.forEach((content) => content.classList.remove("active"));
+
+        const activeTab = document.querySelector(`.tab[data-tab='${tabName}']`);
+        const activeContent = document.getElementById(tabName);
+
+        if (activeTab) activeTab.classList.add("active");
+        if (activeContent) activeContent.classList.add("active");
+
+        localStorage.setItem("activeTab", tabName);
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const savedTab = localStorage.getItem("activeTab");
+        if (savedTab) {
+          openTab(savedTab);
+        } else {
+          // If no saved tab is present, default to 'faculty_users_update'
+          openTab("admin_profile");
+        }
+
+        // Clear error messages only if the page was reloaded
+        if (
+          performance.navigation.type === performance.navigation.TYPE_RELOAD
+        ) {
+          const messages = document.querySelectorAll(
+            ".section div[style*='border']"
+          );
+          messages.forEach((message) => {
+            message.remove();
+          });
+        }
+      });
+
+      document
+        .getElementById("upload-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault(); // Prevent page reload
+
+          let subject_code = document.getElementById("subject_code").value;
+          let subject_name = document.getElementById("subject_name").value;
+
+          fetch("/subject_upload", {
+            method: "POST",
+            body: new URLSearchParams({
+              subject_code: subject_code,
+              subject_name: subject_name,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              document.getElementById("upload-result").innerText = data.message;
+            })
+            .catch((error) => {
+              document.getElementById("upload-result").innerText =
+                "Error: " + error;
+            });
+        });
+
+      // Function to handle the subject delete form
+      document
+        .getElementById("delete-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault(); // Prevent page reload
+
+          let subject_code = document.getElementById("delete_code").value;
+
+          fetch("/subject_delete", {
+            method: "POST",
+            body: new URLSearchParams({
+              subject_code: subject_code,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              document.getElementById("delete-result").innerText = data.message;
+            })
+            .catch((error) => {
+              document.getElementById("delete-result").innerText =
+                "Error: " + error;
+            });
+        });
+
+      // Function to handle viewing subjects
+      document
+        .getElementById("view-button")
+        .addEventListener("click", function () {
+          fetch("/subject_view", {
+            method: "GET",
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.status === "success") {
+                let subjects = data.data;
+                let resultHtml = "<ul>";
+                subjects.forEach((subject) => {
+                  resultHtml += `<li>${subject.subject_code} - ${subject.subject_name}</li>`;
+                });
+                resultHtml += "</ul>";
+                document.getElementById("view-result").innerHTML = resultHtml;
+              } else {
+                document.getElementById("view-result").innerText = data.message;
+              }
+            })
+            .catch((error) => {
+              document.getElementById("view-result").innerText =
+                "Error: " + error;
+            });
+        });
+
+
+    
+    </script>
+  </body>
+</html>
+
+
+
+
+for tab top while changing 
+
+function openTab(tabName) {
+  // Scroll to the top when a new tab is clicked
+  window.scrollTo(0, 0); 
+
+  // Hide all tabs
+  let tabs = document.querySelectorAll(".tab-content");
+  tabs.forEach(tab => tab.style.display = "none");
+
+  // Show the selected tab
+  document.getElementById(tabName).style.display = "block";
+}
+

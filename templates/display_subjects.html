@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Subjects</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .container {
+    padding: 20px; /* Increased padding for better spacing */
+    max-width: 1000px;
+    margin: 40px auto; /* Adjusted margin to center the content better */
+    text-align: center;
+}
+
+/* Added margin to filter section for better spacing */
+.filter-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.filter-section select {
+            padding: 6px;
+            min-width: 180px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+/* Ensuring table is centered and responsive */
+.table-container {
+    overflow-x: auto;
+    margin: 20px auto;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    border-radius: 4px;
+    width: fit-content;
+    max-width: 90%; /* Reduced width for better alignment */
+}
+
+/* Added spacing for better readability */
+table {
+    width: 100%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+/* Adjusted padding to reduce excessive space */
+th, td {
+    padding: 8px; /* Reduced from 10px */
+    text-align: left;
+    border: 1px solid #ddd;
+}
+th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .back-button {
+            background-color: #7a0605;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .back-button:hover {
+            background-color: #6d0707;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+/* Centering the page and reducing left-padding */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 0;
+    margin: 0;
+    background-color: #f8f9fa;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{{ url_for('hod') }}" class="back-button">Back to HOD Dashboard</a>
+        <h2>Subjects List</h2>
+        
+        <div class="filter-section">
+            <div>
+                <label for="department_filter">Filter by Department:</label>
+                <select id="department_filter" onchange="filterTable()">
+                    <option value="">All Departments</option>
+                    {% for dept in departments %}
+                    <option value="{{ dept.department_id }}">{{ dept.department_name }}</option>
+                    {% endfor %}
+                </select>
+                
+            </div>
+            <div>
+                <label for="semester_filter">Filter by Semester:</label>
+                <select id="semester_filter" onchange="filterTable()">
+                    <option value="">All Semesters</option>
+                    {% for sem in range(1, 9) %}
+                    <option value="{{ sem }}"> {{ sem }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="subjectsTable">
+                <thead>
+                    <tr>
+                        <th>Subject Name</th>
+                        <th>Subject Code</th>
+                        <th>Department</th>
+                        <th>Semester</th>
+                        <th>Credits</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subject in subjects %}
+                    <tr>
+                        <td>{{ subject.subject_name }}</td>
+                        <td>{{ subject.subject_code }}</td>
+                        <td data-id="{{ subject.department_id }}">{{ subject.department_name }}</td>
+
+                        <td>{{ subject.semester }}</td>
+                        <td>{{ subject.credits }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+        </div>
+    </div>
+
+    <script>
+     function filterTable() {
+    const department = document.getElementById('department_filter').value;
+    const semester = document.getElementById('semester_filter').value;
+    const table = document.getElementById('subjectsTable');
+    const rows = table.getElementsByTagName('tr');
+
+    for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        const departmentCell = row.cells[2].getAttribute('data-id');  // Department ID from table
+        const semesterCell = row.cells[3].textContent.trim();  // Semester from table
+
+        const departmentMatch = !department || departmentCell === department;
+        const semesterMatch = !semester || semesterCell === semester;
+
+        row.style.display = departmentMatch && semesterMatch ? '' : 'none';
+    }
+}
+
+    </script>
+</body>
+</html>

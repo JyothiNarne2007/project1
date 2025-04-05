@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Result</title>
+</head>
+<body>
+    <h1>Report Results</h1>
+
+    <p>Total Students: {{ total_students }}</p>
+    <p>Passed Students: {{ total_students - failed_students }}</p>
+    <p>Failed Students: {{ failed_students }}</p>
+    <p>Passed Percentage: {{ passed_percentage }}%</p>
+
+    <a href="/">Go Back</a>
+</body>
+</html>

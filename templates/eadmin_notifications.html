@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Notifications</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+    }
+
+    .header {
+      display: flex;
+      width: 100%;
+      background-color: #f0f0f0;
+    }
+
+    .header-content {
+      display: flex;
+      width: 100%;
+    }
+
+    .white-header {
+      background-color: white;
+      color: black;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      flex: 1;
+    }
+
+    .white-header img {
+      max-width: 80px;
+      margin-left: 30px;
+      margin-right: 20px;
+    }
+
+    .header-text {
+      display: flex;
+      flex-direction: column;
+      flex: 1.7;
+    }
+
+    .rheader {
+      background-color: #8b1b29;
+      padding: 0.1px;
+    }
+
+    .rheader h3 {
+      color: white;
+      text-align: center;
+    }
+
+    .green-header {
+      background-color: white;
+      color: black;
+      padding: 30px;
+      text-align: center;
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .apply-now {
+      background: linear-gradient(to right, #d64545, #ff9068);
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      font-size: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .apply-now:hover {
+      background: linear-gradient(to right, #b53838, #ff6958);
+    }
+
+    .container {
+      width: 90%;
+      margin: 20px auto;
+    }
+
+    .notification-section {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .notification-section h2 {
+      color: #8b1b29;
+    }
+
+    .notification-section ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .notification-section li {
+      background-color: #f8f9fa;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      background-color: #8b1b29;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #a52a30;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <div class="white-header">
+        <img src="/static/logo.png" alt="Logo">
+        <h2>GOKARAJU LAILAVATHI ENGINEERING COLLEGE</h2>
+      </div>
+      <div class="header-text">
+        <div class="rheader">
+          <h3>Manage Notifications</h3>
+        </div>
+        <div class="green-header">
+          <nav>
+            <a href="{{ url_for('e_admin') }}">Home</a>
+          </nav>
+          <form action="{{ url_for('logout') }}" method="POST">
+            <button type="submit" class="apply-now">Logout</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </header>
+  <div class="rheader">
+      <h3><b>Manage Notifications</b></h3>
+    </div>
+  <div class="container">
+    <div class="notification-section">
+      <h2>Post a New Notification</h2>
+
+
+      <form action="{{ url_for('eadmin_manage_notifications') }}" method="POST">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required>
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" rows="4" required></textarea>
+        <button type="submit">Post Notification</button>
+      </form>
+
+      <h2>Existing Notifications</h2>
+      <ul>
+        {% if notifications %}
+          {% for notification in notifications %}
+            <li>
+              <strong>{{ notification.title }}</strong><br>
+              {{ notification.message }}<br>
+              <em>Posted by {{ notification.admin_username }} on {{ notification.posted_at }}</em>
+              <form action="{{ url_for('delete_notification', id=notification.id) }}" method="POST" style="display:inline;">
+                <button type="submit">Delete</button>
+              </form>
+            </li>
+          {% endfor %}
+        {% else %}
+          <li>No notifications to display.</li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

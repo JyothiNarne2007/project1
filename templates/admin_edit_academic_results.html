@@ -1,0 +1,280 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search Result by Roll Number</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+         body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        margin-top :200px;
+      }
+      .profile-container {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        width: 80%;
+        max-width: 900px;
+        padding: 30px;
+        margin: 40px 170px 20px;
+        font-size: 14px;
+      }
+
+      .profile-container h3 {
+        color: #8b1b29;
+        border-bottom: 2px solid #8b1b29;
+        font-size: 18px;
+        padding-bottom: 5px;
+        margin-bottom: 15px;
+      }
+
+      .form-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .form-details label {
+        font-weight: bold;
+        color: #333;
+      }
+
+      .form-details input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      .update button[type="submit"] {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #8b1b29;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .update button[type="submit"]:hover {
+        background-color: #6f1623;
+      }
+      * Notifications Section */ .notifications {
+        margin-top: 30px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #e9ecef;
+      }
+
+      .notification {
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #8b1b29;
+        border-radius: 5px;
+        background-color: #fff;
+      }
+      .icon-button {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        color: #333333;
+        background: #dddddd;
+        border: none;
+        outline: none;
+        border-radius: 50%;
+      }
+      .icon-button:hover {
+        cursor: pointer;
+      }
+      .icon-button:active {
+        background: #cccccc;
+      }
+      .icon-button__badge {
+        position: absolute;
+        top: -8px;
+        right: -2px;
+        width: 20px; /* Adjust width */
+        height: 20px; /* Adjust height */
+        background: red;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        font-size: 14px; /* Adjust size as needed */
+        font-weight: bold; /* Optional: make the exclamation mark bold */
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-content">
+        <div class="white-header">
+          <img src="/static/logo.png" alt="Alverno College Logo" class="logo" />
+          <h2>
+            <b>GOKARAJU LAILAVATHI<br />ENGINEERING COLLEGE</b>
+          </h2>
+        </div>
+        <div class="header-text">
+          <div class="red-header"></div>
+          <div class="green-header">
+            <nav>
+              <a href="{{ url_for('admin_profile') }}" class="tab1">Profile</a>
+              <a href="{{ url_for('admin_academic_result') }}" class="tab1"
+                >Academic Results</a
+              >
+              <a href="{{ url_for('admin_edit_profile') }}" class="tab1">Edit Profile</a>
+              <a href="{{ url_for('admin_edit_academic_results') }}" class="tab1 active"
+                >Edit Academic Results</a
+              >
+
+              <form
+  style="display: inline"
+>
+  <button
+    type="button"
+    class="apply-now"
+    onclick="window.location.href='http://127.0.0.1:5000/admin_student';"
+  >
+    Back
+  </button>
+</form>
+
+            </nav>
+
+          </div>
+        </div>
+      </div>
+      <div class="rheader">
+      <h3><b> Edit Student Academic Results</b></h3>
+    </div>
+
+    </header>
+
+    <!-- Check if academic profile exists -->
+    {% if academic_profile %}
+    <div class="profile-container">
+    <form method="POST">
+      <div class="profile-section">
+        <h3><b>Personal Information</b></h3>
+        <div class="form-details">
+        <label for="Branch">Branch:</label>
+        <input
+          type="text"
+          name="Branch"
+          value="{{ academic_profile['Branch'] }}"
+        />
+        <label for="Status">Status:</label>
+        <select name="Status" id="status-dropdown" onchange="togglePassedOutYearField()">
+          <option value="Active" {% if sgpa_data.Status == 'Active' %}selected{% endif %}>Active</option>
+          <option value="Detained" {% if sgpa_data.Status == 'Detained' %}selected{% endif %}>Detained</option>
+          <option value="Drop" {% if sgpa_data.Status == 'Drop' %}selected{% endif %}>Drop</option>
+          <option value="Readmitted Year" {% if sgpa_data.Status == 'Readmitted Year' %}selected{% endif %}>Readmitted Year</option>
+      </select>
+
+      <label for="Passed_Out_Year">Passed Out Year:</label>
+<input
+    type="text"
+    name="Passed Out Year"
+    id="passed-out-year-field"
+    value="{{ academic_profile['Passed Out Year'] }}"
+    {% if sgpa_data.Status != 'Detained' %}disabled{% endif %}
+/>
+<label for="readmitted_year">Readmitted Year:</label>
+<input type="text" id="readmitted_year" name="readmitted_year" value="{{ academic_profile['readmitted_year'] }}" />
+
+        <label for="reason">Reason:</label>
+        <textarea id="reason" name="reason">{{ academic_profile['reason'] }}</textarea>
+
+
+      </div>
+
+      <div class="update"><button type="submit" class="submit-btn">Update Profile</button></div>
+    </form>
+    {% else %}
+    <p class="error">No academic profile data found for the student.</p>
+    {% endif %}
+    </div>
+
+      <script>
+    function togglePassedOutYearField() {
+    const status = document.getElementById("status-dropdown").value;
+    const passedOutYearField = document.getElementById("passed-out-year-field");
+    const readmittedYearField = document.getElementById("readmitted_year");  // Corrected ID
+    const reasonField = document.getElementById("reason");  // Corrected ID
+
+    // Disable all fields initially
+    passedOutYearField.disabled = true;
+    readmittedYearField.disabled = true;
+    reasonField.disabled = true;
+
+    if (status === "Detained" || status === "Readmitted Year") {
+        passedOutYearField.disabled = false; // Enable Passed Out Year
+    } else if (status === "Drop") {
+        passedOutYearField.value = passedOutYearField.value; // Keep value but disable
+    } else {
+        passedOutYearField.value = ""; // Clear Passed Out Year field for other statuses
+    }
+
+    if (status === "Readmitted Year") {
+        readmittedYearField.disabled = false;
+        reasonField.disabled = false;
+    }
+}
+
+// Ensure the function runs when the page loads
+window.onload = function () {
+    togglePassedOutYearField();
+};
+
+
+    function toggleDropdown() {
+        document.getElementById("dropdown").classList.toggle("show");
+    }
+
+    window.onclick = function (event) {
+        if (!event.target.matches(".menu-icon")) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains("show")) {
+                    openDropdown.classList.remove("show");
+                }
+            }
+        }
+    };
+    function handleStatusChange() {
+            var status = document.getElementById("status").value;
+            var passedOutYear = document.getElementById("passed_out_year");
+            var readmittedYear = document.getElementById("readmitted_year");
+            var reason = document.getElementById("reason");
+
+            // Disable all initially
+            passedOutYear.disabled = true;
+            readmittedYear.disabled = true;
+            reason.disabled = true;
+
+            if (status === "Detained") {
+                passedOutYear.disabled = false;
+            }
+            if (status === "Readmitted Year") {
+                readmittedYear.disabled = false;
+                reason.disabled = false;
+            }
+        }
+
+    </script>
+  </body>
+</html>

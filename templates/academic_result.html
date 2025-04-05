@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search Result by Roll Number</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        margin-top: 200px;
+        margin-right: 130px;
+      }
+
+      /* Education Information Container */
+      .education-container {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        width: 80%;
+        margin: 40px auto;
+        padding: 20px;
+      }
+
+      .education-container h3 {
+        color: #007bff;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 5px;
+        margin-bottom: 20px;
+      }
+
+      .profile-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .profile-details p {
+        font-size: 13px;
+        background-color: #f9f9f9;
+        padding: 12px;
+        border-radius: 5px;
+        margin: 0;
+      }
+
+      .profile-details p strong {
+        display: inline-block;
+        width: 180px;
+        color: #333;
+      }
+
+      table {
+        width: 80%;
+        margin: 20px auto;
+        border-collapse: collapse;
+        background-color: #fff;
+        font-size: 12px;
+      }
+
+      th,
+      td {
+        padding: 8px;
+        text-align: center;
+        border: 1px solid black;
+      }
+
+      th {
+        background-color: #f5f5f5;
+      }
+
+      .sgpa {
+        width: 80%;
+        margin: 10px auto;
+        text-align: left;
+        font-weight: bold;
+        font-size: 12px;
+      }
+      .cgpa {
+        width: 85%;
+        margin: 5px auto;
+        text-align: left;
+        font-weight: bold;
+        font-size: 20px;
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+      }
+      .backlog {
+        width: 85%;
+        margin: 5px auto;
+        text-align: left;
+        font-weight: bold;
+        font-size: 20px;
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+      }
+
+      .error {
+        text-align: center;
+        color: red;
+        font-size: 18px;
+      }
+      .table-head {
+        padding-left: 90px;
+        color: #ca0d23;
+        font-family: "Times New Roman", Times, serif;
+        font-size: 30px;
+      }
+      .internal-head {
+        padding-left: 113px;
+        color: blue;
+        font-family: "Times New Roman", Times, serif;
+        font-size: 15px;
+      }
+      /* Style the toggle button */
+      .toggle-button {
+        font-size: 18px;
+        cursor: pointer;
+        color: blue;
+        user-select: none;
+      }
+
+      /* Style the internal marks section */
+      .internal-marks table {
+        width: 80%;
+        margin: 20px auto;
+        border-collapse: collapse;
+        background-color: #fff;
+        font-size: 12px;
+      }
+
+      .internal-marks th,
+      .internal-marks td {
+        padding: 8px;
+        text-align: center;
+        border: 1px solid black;
+      }
+
+      .internal-marks th {
+        background-color: #f5f5f5;
+      }
+      .sem-sgpa {
+        padding-left: 120px;
+        font-size: 19px;
+        color: rgb(14, 145, 14);
+      }
+      @media (max-width: 768px) {
+        table {
+          width: 95%;
+        }
+        th,
+        td {
+          font-size: 10px;
+          padding: 5px;
+        }
+        .sgpa {
+          font-size: 10px;
+        }
+      }
+
+      /* Dropdown menu */
+      .dropdown-content {
+        color: black;
+        display: none;
+        position: absolute;
+        right: 80px; /* Adjusted closer to the edge of the nav */
+        top: 60px; /* Positioned below the navbar */
+        background-color: #204564; /* Initially white background */
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+        border-radius: 5px;
+        z-index: 1;
+        width: 150px;
+      }
+
+      /* Dropdown links */
+      .dropdown-content a {
+        color: black; /* First visible color for text */
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        font-size: 16px;
+        background-color: transparent; /* Initial background */
+      }
+
+      /* Hover effect on dropdown links */
+      .dropdown-content a:hover {
+        /* Same as navbar color */
+        color: white; /* Keep text white on hover */
+      }
+
+      /* Show the dropdown when activated */
+      .dropdown-content.show {
+        display: block;
+      }
+
+      h2.main-heading {
+        text-align: center;
+        margin-top: 60px;
+        color: #333;
+        font-size: 26px;
+        font-family: "Times New Roman", Times, serif;
+      }
+
+      h2 {
+        width: 80%;
+        margin: 10px auto;
+        text-align: left;
+        color: #333;
+      }
+
+      /* Education Information Container */
+      .education-container {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        width: 80%;
+        margin: 40px auto;
+        padding: 20px;
+      }
+
+      .education-container h3 {
+        color: #007bff;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 5px;
+        margin-bottom: 20px;
+      }
+
+      .profile-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .profile-details p {
+        font-size: 13px;
+        background-color: #f9f9f9;
+        padding: 12px;
+        border-radius: 5px;
+        margin: 0;
+      }
+
+      .profile-details p strong {
+        display: inline-block;
+        width: 180px;
+        color: #333;
+      }
+
+      table {
+        width: 80%;
+        margin: 20px auto;
+        border-collapse: collapse;
+        background-color: #fff;
+        font-size: 12px;
+      }
+
+      th,
+      td {
+        padding: 8px;
+        text-align: center;
+        border: 1px solid black;
+      }
+
+      th {
+        background-color: #f5f5f5;
+      }
+
+      .sgpa {
+        width: 80%;
+        margin: 10px auto;
+        text-align: left;
+        font-weight: bold;
+        font-size: 12px;
+      }
+
+      .error {
+        text-align: center;
+        color: red;
+        font-size: 18px;
+      }
+      /* Main container to hold all content below the fixed navbar */
+      .main-container {
+        background-color: #fff;
+        border-radius: 15px;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+        width: 90%;
+        padding-top: 2px;
+        max-width: 1200px;
+        margin-left: 115px;
+        margin-top: 2px; /* Remove top margin */
+        margin-bottom: 100px auto; /* Adjust as necessary */
+      }
+
+      /* College logo and name section */
+      .college-info {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      .college-info img {
+        height: 80px;
+        width: 80px;
+        margin-right: 20px;
+      }
+
+      .college-info h1 {
+        font-size: 28px;
+        color: #011505;
+        text-align: center;
+        margin: 0;
+      }
+      /* Circle Container */
+      .status-circle {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 5px; /* Space between the dropdown and the circle */
+      }
+      .status-large {
+        font-size: 1.2em; /* Adjust the size as needed */
+        font-weight: bold; /* Optional: make it bold for better visibility */
+      }
+
+      .status-active {
+        background-color: green;
+      }
+
+      .status-detained {
+        background-color: red;
+      }
+
+      .status-drop {
+        background-color: black;
+      }
+      .status-readmitted {
+        background-color: orange;
+      }
+      * Notifications Section */ .notifications {
+        margin-top: 30px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #e9ecef;
+      }
+
+      @media (max-width: 768px) {
+        table {
+          width: 95%;
+        }
+        th,
+        td {
+          font-size: 10px;
+          padding: 5px;
+        }
+        .sgpa {
+          font-size: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-content">
+        <div class="white-header">
+          <img src="/static/logo.png" alt="GLEC College Logo" class="logo" />
+          <h2>
+            <b>GOKARAJU LAILAVATHI<br />ENGINEERING COLLEGE</b>
+          </h2>
+        </div>
+        <div class="header-text">
+          <div class="red-header"></div>
+          <div class="green-header">
+            <nav>
+              <a href="{{ url_for('profile') }}" class="tab1">Profile</a>
+              <a href="{{ url_for('academic_result') }}" class="tab1 active"
+                >Academic Results</a
+              >
+              <a
+                id="electiveLink"
+                href="{{ url_for('show_electives') }}"
+                class="tab1"
+                >Elective Form</a
+              >
+              <a href="{{ url_for('student_subjects') }}" class="tab1"
+                >Subjects</a
+              >
+              <div id="main-nav" class="stellarnav" align="center">
+                <ul>
+                  <li class="lib tab1">
+                    <a href="#">E-Library</a>
+                    <ul class="dropdown">
+                      <li>
+                        <a href="https://ndl.iitkgp.ac.in/" target="_blank"
+                          >National Library</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          href="https://glwec.bestbookbuddies.com/"
+                          target="_blank"
+                          >College Library</a
+                        >
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+              <a href="{{ url_for('view_notifications') }}" class="icon-button">
+                <span class="material-icons">notifications</span>
+              </a>
+              <form
+                action="http://127.0.0.1:5000/logout"
+                method="POST"
+                style="display: inline"
+              >
+                <button type="submit" class="apply-now">Logout</button>
+              </form>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <div class="rheader">
+        <h3><b>Student Academic Details</b></h3>
+      </div>
+    </header>
+
+    <div class="main-content">
+      <div class="main-container">
+        {% if student %}
+        <div class="education-container">
+          <div class="profile-details">
+            <p><strong>Course:</strong> BE</p>
+            <p><strong>Branch:</strong> {{ student['Branch'] }}</p>
+            <p><strong>Roll Number:</strong> {{ student['roll_number'] }}</p>
+            <p><strong>Name:</strong> {{ student['STUDENT NAME'] }}</p>
+            <p><strong>Admitted year</strong> {{ student['Admitted year'] }}</p>
+            <p>
+              <strong>Passed out year</strong> {{ student['Passed out year'] }}
+            </p>
+            <p><strong>Gender:</strong> {{ student['Sex'] }}</p>
+            <p>
+              <strong>Status:</strong>
+              {% if sgpa_data and sgpa_data.Status %}
+              <span
+                class="status-circle {% if sgpa_data.Status == 'Active' %} status-active {% elif sgpa_data.Status == 'Detained' %} status-detained {% elif sgpa_data.Status == 'Drop' %} status-drop {% elif sgpa_data.Status == 'Readmitted Year' %} status-readmitted {% endif %}"
+              >
+              </span>
+              {% if sgpa_data.Status == 'Active' %}
+              <span class="status-large">{{ sgpa_data.Status }}</span>
+              {% else %} {{ sgpa_data.Status }} {% endif %} {% else %} Not
+              Available {% endif %}
+            </p>
+            <p>
+              <strong>Readmitted Year</strong> {{ student['readmitted_year'] }}
+            </p>
+            <p><strong>Reason</strong> {{ student['reason'] }}</p>
+          </div>
+        </div>
+        <h2 class="main-heading">Previous Details</h2>
+        <table>
+          <tr>
+            <th>Rank</th>
+            <th>Seat Category</th>
+            <th>SSC Marks</th>
+            <th>Inter Marks</th>
+          </tr>
+          <tr>
+            <td>{{ student['Rank'] }}</td>
+            <td>{{ student['Joined By'] }}</td>
+            <td>{{ student['SSC Marks'] |int }}</td>
+            <td>{{ student['Inter/ Diploma Marks'] }}</td>
+          </tr>
+        </table>
+        {% else %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <h2 class="main-heading">Academic Results</h2>
+        {% for sem, results in all_sem_results.items() %} {% if results|length >
+        0 %}
+        <h3 class="table-head">{{ sem | replace('sem', 'Semester ') }}</h3>
+        <table>
+          <tr>
+            <th>Exam Series</th>
+            <th>Subject Code</th>
+            <th>Subject Name</th>
+            <th>Grade Secured</th>
+            <th>Grade Point</th>
+            <th>Credits</th>
+            <th>Result</th>
+          </tr>
+          {% for result in results %}
+          <tr>
+            <td>
+              {% if result.exam_series == 'Revaluation' %} Regular {% else %} {{
+              result.exam_series }} {% endif %}
+            </td>
+
+            <td>{{ result.subject_code }}</td>
+            <td>{{ result.subject_name }}</td>
+            <td>{{ result.grade_secured }}</td>
+            <td>{{ result.grade_point }}</td>
+            <td>{{ result.credits }}</td>
+            <td>
+              {% if result.grade_secured == 'F' or result.grade_secured == 'AB'
+              %} Fail {% else %} Pass {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+        <!-- Display Internal Marks Table -->
+        <!-- Internal Marks Toggle Button -->
+        {% if internal_marks_data[sem] %}
+        <h4 class="internal-head">
+          <span class="toggle-button" onclick="toggleInternalMarks('{{ sem }}')"
+            >[+]</span
+          >
+          Internal Marks for {{ sem | replace('sem', 'Semester ') }}
+        </h4>
+        <div
+          id="internal-marks-{{ sem }}"
+          class="internal-marks"
+          style="display: none"
+        >
+          <table>
+            <tr>
+              <th>Subject Name</th>
+              <th>CIE1</th>
+              <th>CIE2</th>
+              <th>Total</th>
+              <th>Assignment</th>
+              <th>Average</th>
+            </tr>
+            {% for mark in internal_marks_data[sem] %}
+            <tr>
+              <td>{{ mark.subject_name }}</td>
+              <td>{{ mark.cie1 }}</td>
+              <td>{{ mark.cie2 }}</td>
+              <td>{{ mark.total }}</td>
+              <td>{{ mark.assignment }}</td>
+              <td>{{ mark.avg }}</td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+
+        {% endif %}
+
+        <!-- Display SGPA for the current semester -->
+        {% if sgpa_data %}
+        <h4 class="sem-sgpa">
+          SGPA for {{ sem | replace('sem', 'Semester ') }}: {% if no_of_backlogs
+          and no_of_backlogs > 0 %} {{ sgpa_data[sem + '_sgpa'] }}
+          <!-- Show SGPA if backlogs exist -->
+          {% else %} {{ sgpa_data[sem + '_actual_sgpa'] }}
+          <!-- Show Actual SGPA if no backlogs -->
+          {% endif %}
+        </h4>
+        {% else %}
+        <p>
+          No SGPA data available for {{ sem | replace('sem', 'Semester') }}.
+        </p>
+        {% endif %} {% endif %}
+        <!-- Close the if condition for results|length > 0 -->
+        {% endfor %}
+        <!-- Display CGPA -->
+        {% if no_of_backlogs %}
+        <div class="backlog">*No of Backlogs: {{ no_of_backlogs }}</div>
+
+        {% endif %} {% if cgpa %}
+        <div class="cgpa">*CGPA calculated: {{ cgpa }} (this is not final)</div>
+        {% else %}
+        <div class="cgpa">*CGPA not available</div>
+        {% endif %}
+        <!-- Close the for loop -->
+      </div>
+    </div>
+  </body>
+  <script>
+    function toggleInternalMarks(sem) {
+      var table = document.getElementById("internal-marks-" + sem);
+      var toggleButton = document.querySelector(
+        `#internal-marks-${sem} ~ .internal-head .toggle-button`
+      );
+
+      // Get the actual computed display style of the table
+      var currentDisplay = window.getComputedStyle(table).display;
+
+      // Toggle visibility
+      if (currentDisplay === "none") {
+        table.style.display = "block";
+        toggleButton.innerHTML = "[-]"; // Change to minus
+      } else {
+        table.style.display = "none";
+        toggleButton.innerHTML = "[+]"; // Change back to plus
+      }
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+      // Check if notifications were visited
+      if (!sessionStorage.getItem("notificationsVisited")) {
+        // Show the badge if notifications haven't been visited
+        document.getElementById("notification-badge").style.display =
+          "inline-block";
+      }
+
+      // Clear the badge if the notifications page was visited
+      if (sessionStorage.getItem("notificationsVisited")) {
+        document.getElementById("notification-badge").style.display = "none";
+        sessionStorage.removeItem("notificationsVisited");
+      }
+    });
+    function updateStatusCircle(status) {
+      var circle = document.getElementById("status-circle");
+      circle.className = "status-circle"; // Reset the class
+      if (status === "Active") {
+        circle.classList.add("status-active");
+      } else if (status === "Detained") {
+        circle.classList.add("status-detained");
+      } else if (status === "Drop") {
+        circle.classList.add("status-drop");
+      }
+    }
+
+    // Call the function on page load to set the initial color
+    window.onload = function () {
+      var status = document.getElementById("status-select").value;
+      updateStatusCircle(status);
+    };
+    function toggleDropdown() {
+      document.getElementById("dropdown").classList.toggle("show");
+    }
+    window.onclick = function (event) {
+      if (!event.target.matches(".menu-icon")) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        for (var i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains("show")) {
+            openDropdown.classList.remove("show");
+          }
+        }
+      }
+    };
+    //common js
+
+    function toggleDropdown() {
+      document.getElementById("dropdown").classList.toggle("show");
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      fetch("/check_electives")
+        .then((response) => response.json())
+        .then((data) => {
+          if (!data.can_edit) {
+            document.getElementById("electiveLink").style.display = "none";
+          }
+        })
+        .catch((error) =>
+          console.error("Error fetching elective status:", error)
+        );
+    });
+  </script>
+</html>

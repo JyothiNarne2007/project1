@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Equal Width Headers</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.0/dist/sweetalert2.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-content">
+        <div class="white-header">
+          <img src="/static/logo.png" alt="Alverno College Logo" class="logo" />
+          <h2>
+            <b>GOKARAJU LAILAVATHI<br />ENGINEERING COLLEGE</b>
+          </h2>
+        </div>
+        <div class="header-text">
+          <div class="red-header"></div>
+          <div class="green-header">
+            <nav>
+              <a href="{{ url_for('home') }}" class="tab1">Home</a>
+              {% if session['roles'] %} {% for role in session['roles'] %} {% if
+              role == 'faculty' %}
+
+              <a href="{{ url_for('teacher') }}" class="tab1 active">Faculty</a>
+              {% elif role == 'hod' %}
+              <a href="{{ url_for('hod') }}" class="tab1">HOD</a>
+              {% elif role == 'e-admin' %}
+              <a href="{{ url_for('eadmin') }}" class="tab1">E-Admin</a>
+              {% elif role == 'admin' %}
+              <a href="{{ url_for('admin') }}" class="tab1">Admin</a>
+              {% endif %} {% endfor %} {% endif %}
+              <div id="main-nav" class="stellarnav" align="center">
+                <ul>
+                  <li class="lib tab1">
+                    <a href="#">E-Library</a>
+                    <ul class="dropdown">
+                      <li>
+                        <a href="https://ndl.iitkgp.ac.in/" target="_blank"
+                          >National Library</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          href="https://glwec.bestbookbuddies.com/"
+                          target="_blank"
+                          >College Library</a
+                        >
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+
+              <a
+                href="{{ url_for('manage_notifications') }}"
+                class="icon-button"
+              >
+                <span class="material-icons">notifications</span>
+              </a>
+              <form
+                action="http://127.0.0.1:5000/logout"
+                method="POST"
+                style="display: inline"
+              >
+                <button type="submit" class="apply-now">Logout</button>
+              </form>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <div class="rheader">
+        <h3><b>Faculty Dashboard</b></h3>
+      </div>
+    </header>
+
+    <div class="sidebar">
+      <div class="tabs">
+          <div class="tab active" data-tab="admin_profile" onclick="resetScroll(); openTab('admin_profile');">
+              Enter Internal Marks
+          </div>
+      </div>
+  </div>
+  
+
+    <div class="main-content">
+      <div id="admin_profile" class="tab-content">
+        <div class="section">
+          <form action="/get_students_results" method="POST" id="dynamic-form">
+            <!-- Subject Dropdown -->
+            <label for="subject">Subject:</label>
+            <select id="subject" name="subject" required>
+              <option value="">Select Subject</option>
+            </select>
+
+            <!-- Year & Branch Section Dropdown -->
+            <label for="year_branch">Year & Branch Section:</label>
+            <select id="year_branch" name="year_branch" required>
+              <option value="">Select Year & Branch Section</option>
+            </select>
+
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <p>© Copyright 2025 - All Rights Reserved www.glwec.in</p>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        // Fetch data from the backend on page load
+        $.ajax({
+          url: "/get_subjects_and_sections",
+          method: "GET",
+          success: function (data) {
+            const { subjects, assessments } = data;
+
+            // Populate the subject dropdown
+            subjects.forEach((subject) => {
+              $("#subject").append(
+                new Option(subject.subject_name, subject.subject_code)
+              );
+            });
+
+            // Handle change in subject dropdown
+            $("#subject").change(function () {
+              const selectedSubjectCode = $(this).val();
+              $("#year_branch")
+                .empty()
+                .append(
+                  '<option value="">Select Year & Branch Section</option>'
+                );
+
+              assessments.forEach((assessment) => {
+                if (assessment.subject_code === selectedSubjectCode) {
+                  const yearSections = assessment.year_sections;
+                  for (const [year, branches] of Object.entries(yearSections)) {
+                    branches.forEach((branch) => {
+                      const value = `${year}-${branch}`;
+                      $("#year_branch").append(new Option(value, value));
+                    });
+                  }
+                }
+              });
+            });
+          },
+          error: function (error) {
+            console.error("Error fetching data:", error);
+          },
+        });
+      });
+      fetch("/get_students_results")
+        .then((response) => response.json())
+        .then((data) => {
+          // Check that the `status` property exists and is used correctly
+          const students = data.students.filter(
+            (student) => student.status !== "drop"
+          );
+          // Render the filtered students in your dropdown or form
+        });
+
+      fetch("/get_departments")
+        .then((response) => response.json())
+        .then((data) => {
+          const departmentDropdown = document.getElementById("department_id");
+          data.forEach((department) => {
+            const option = document.createElement("option");
+            option.value = department.department_id;
+            option.textContent = department.department_name;
+            departmentDropdown.appendChild(option);
+          });
+        })
+        .catch((error) => console.error("Error fetching departments:", error));
+      function openTab(tabName) {
+        var i;
+        var tabContents = document.getElementsByClassName("tab-content");
+        var tabs = document.getElementsByClassName("tab");
+
+        for (i = 0; i < tabContents.length; i++) {
+          tabContents[i].classList.remove("active");
+        }
+        for (i = 0; i < tabs.length; i++) {
+          tabs[i].classList.remove("active");
+        }
+
+        document.getElementById(tabName).classList.add("active");
+        event?.currentTarget?.classList.add("active");
+      }
+
+      window.onload = function () {
+        openTab("admin_profile");
+        document.querySelector(".tabs .tab").classList.add("active");
+      };
+
+      document
+        .getElementById("upload-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault(); // Prevent page reload
+
+          let subject_code = document.getElementById("subject_code").value;
+          let subject_name = document.getElementById("subject_name").value;
+
+          fetch("/subject_upload", {
+            method: "POST",
+            body: new URLSearchParams({
+              subject_code: subject_code,
+              subject_name: subject_name,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              document.getElementById("upload-result").innerText = data.message;
+            })
+            .catch((error) => {
+              document.getElementById("upload-result").innerText =
+                "Error: " + error;
+            });
+        });
+
+      // Function to handle the subject delete form
+      document
+        .getElementById("delete-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault(); // Prevent page reload
+
+          let subject_code = document.getElementById("delete_code").value;
+
+          fetch("/subject_delete", {
+            method: "POST",
+            body: new URLSearchParams({
+              subject_code: subject_code,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              document.getElementById("delete-result").innerText = data.message;
+            })
+            .catch((error) => {
+              document.getElementById("delete-result").innerText =
+                "Error: " + error;
+            });
+        });
+
+      // Function to handle viewing subjects
+      document
+        .getElementById("view-button")
+        .addEventListener("click", function () {
+          fetch("/subject_view", {
+            method: "GET",
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.status === "success") {
+                let subjects = data.data;
+                let resultHtml = "<ul>";
+                subjects.forEach((subject) => {
+                  resultHtml += `<li>${subject.subject_code} - ${subject.subject_name}</li>`;
+                });
+                resultHtml += "</ul>";
+                document.getElementById("view-result").innerHTML = resultHtml;
+              } else {
+                document.getElementById("view-result").innerText = data.message;
+              }
+            })
+            .catch((error) => {
+              document.getElementById("view-result").innerText =
+                "Error: " + error;
+            });
+        });
+
+
+
+        function resetScroll() {
+    window.scrollTo(0, 0);
+}
+
+    </script>
+  </body>
+</html>

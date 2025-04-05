@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Equal Width Headers</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.0/dist/sweetalert2.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+
+    <style>
+      main {
+        padding-top: 40px;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+      }
+
+      .container {
+        background: linear-gradient(135deg, #ffffff, #eaeaea);
+        padding: 30px;
+        border-radius: 15px;
+        border: 3px solid #ddd;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        max-width: 800px;
+        width: 80%;
+        text-align: left;
+        color: #333;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      .container h2 {
+        color: #8b1b29;
+        margin-bottom: 20px;
+        font-size: 24px;
+      }
+
+      .container p {
+        margin: 10px 0;
+        font-size: 18px;
+      }
+
+      .welcome-message {
+        text-align: center;
+        font-size: 20px;
+        color: #8b0000; /* Dark red */
+        margin-bottom: 20px;
+      }
+
+      .faculty-details-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px auto;
+        width: 60%; /* Adjust as needed */
+        background-color: #f9f9f9;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .faculty-details {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .faculty-details td {
+        padding: 10px 15px;
+        font-size: 16px;
+      }
+
+      .detail-label {
+        text-align: left;
+        font-weight: bold;
+        color: #555;
+        width: 40%;
+      }
+
+      .colon {
+        text-align: center;
+        width: 5%;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .detail-value {
+        text-align: left;
+        color: #000;
+        width: 55%;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-content">
+        <div class="white-header">
+          <img src="/static/logo.png" alt="Alverno College Logo" class="logo" />
+          <h2>
+            <b>GOKARAJU LAILAVATHI<br />ENGINEERING COLLEGE</b>
+          </h2>
+        </div>
+        <div class="header-text">
+          <div class="red-header"></div>
+          <div class="green-header">
+            <nav>
+              <a href="{{ url_for('home') }}" class="tab1 active">Home</a>
+              {% if session['roles'] %} {% for role in session['roles'] %} {% if
+              role == 'faculty' %}
+
+              <a href="{{ url_for('teacher') }}" class="tab1">Faculty</a>
+              {% elif role == 'hod' %}
+              <a href="{{ url_for('hod') }}" class="tab1">HOD</a>
+              {% elif role == 'e-admin' %}
+              <a href="{{ url_for('eadmin') }}" class="tab1">E-Admin</a>
+              {% elif role == 'admin' %}
+              <a href="{{ url_for('admin') }}" class="tab1">Admin</a>
+              {% endif %} {% endfor %} {% endif %}
+              <div id="main-nav" class="stellarnav" align="center">
+                <ul>
+                  <li class="lib tab1">
+                    <a href="#">E-Library</a>
+                    <ul class="dropdown">
+                      <li>
+                        <a href="https://ndl.iitkgp.ac.in/" target="_blank"
+                          >National Library</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          href="https://glwec.bestbookbuddies.com/"
+                          target="_blank"
+                          >College Library</a
+                        >
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+
+              <a
+                href="{{ url_for('manage_notifications') }}"
+                class="icon-button"
+              >
+                <span class="material-icons">notifications</span>
+              </a>
+              <form
+                action="http://127.0.0.1:5000/logout"
+                method="POST"
+                style="display: inline"
+              >
+                <button type="submit" class="apply-now">Logout</button>
+              </form>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <div class="rheader">
+        <h3><b>Faculty Profile</b></h3>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% else %}
+        <h2 class="welcome-message">
+          Welcome, {{ faculty['first_name'] }} {{ faculty['last_name'] }}
+        </h2>
+        <div class="faculty-details-container">
+          <table class="faculty-details">
+            <tr>
+              <td class="detail-label">First Name</td>
+              <td class="colon">:</td>
+              <td class="detail-value">{{ faculty['first_name'] }}</td>
+            </tr>
+            <tr>
+              <td class="detail-label">Last Name</td>
+              <td class="colon">:</td>
+              <td class="detail-value">{{ faculty['last_name'] }}</td>
+            </tr>
+            <tr>
+              <td class="detail-label">Faculty ID</td>
+              <td class="colon">:</td>
+              <td class="detail-value">{{ faculty['faculty_id'] }}</td>
+            </tr>
+            <tr>
+              <td class="detail-label">Email</td>
+              <td class="colon">:</td>
+              <td class="detail-value">{{ faculty['email'] }}</td>
+            </tr>
+            <tr>
+              <td class="detail-label">Phone Number</td>
+              <td class="colon">:</td>
+              <td class="detail-value">{{ faculty['phone_number'] }}</td>
+            </tr>
+            <tr>
+              <td class="detail-label">Department ID</td>
+              <td class="colon">:</td>
+              <td class="detail-value">{{ faculty['department_id'] }}</td>
+            </tr>
+            <tr>
+              <td class="detail-label">Designation</td>
+              <td class="colon">:</td>
+              <td class="detail-value">{{ faculty['designation'] }}</td>
+            </tr>
+            <tr>
+              <td class="detail-label">Joining Date</td>
+              <td class="colon">:</td>
+              <td class="detail-value">{{ faculty['joining_date'] }}</td>
+            </tr>
+            <tr>
+              <td class="detail-label">Status</td>
+              <td class="colon">:</td>
+              <td class="detail-value">{{ faculty['status'] }}</td>
+            </tr>
+          </table>
+        </div>
+        {% endif %}
+        <h3 style="color: #ff6958; text-align: center">
+          * If any changes contact Admin
+        </h3>
+      </div>
+    </main>
+
+    <footer>
+      <p>© Copyright 2025 - All Rights Reserved www.glwec.in</p>
+    </footer>
+  </body>
+</html>

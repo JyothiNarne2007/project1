@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Profile Details</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        margin-top: 200px;
+      }
+
+      .profile-container {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        width: 80%;
+        max-width: 900px;
+        padding: 30px;
+        margin: 40px 170px 20px;
+        font-size: 14px;
+      }
+
+      .profile-container h2,
+      h3 {
+        color: #333;
+        text-align: left;
+      }
+
+      .profile-container h3 {
+        color: #8b1b29;
+        border-bottom: 2px solid #8b1b29;
+        font-size: 18px;
+        padding-bottom: 5px;
+        margin-bottom: 15px;
+      }
+
+      .profile-section {
+        margin-bottom: 30px;
+      }
+
+      .profile-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .profile-details p {
+        background-color: #f9f9f9;
+        padding: 12px;
+        border-radius: 5px;
+        margin: 0;
+      }
+
+      .profile-details p strong {
+        display: inline-block;
+        width: 180px;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-content">
+        <div class="white-header">
+          <img src="/static/logo.png" alt="Alverno College Logo" class="logo" />
+          <h2>
+            <b>GOKARAJU LAILAVATHI<br />ENGINEERING COLLEGE</b>
+          </h2>
+        </div>
+        <div class="header-text">
+          <div class="red-header"></div>
+          <div class="green-header">
+            <nav>
+              <a href="{{ url_for('admin_profile') }}" class="tab1 active"
+                >Profile</a
+              >
+              <a href="{{ url_for('admin_academic_result') }}" class="tab1"
+                >Academic Results</a
+              >
+              {% if 'super_admin' or 'e_admin' in roles %}
+              <a href="{{ url_for('admin_edit_profile') }}" class="tab1"
+                >Edit Profile</a
+              >
+              <a
+                href="{{ url_for('admin_edit_academic_results') }}"
+                class="tab1"
+                >Edit Academic Results</a
+              >
+              {% endif %}
+
+              <form style="display: inline">
+                <button
+                  type="button"
+                  class="apply-now"
+                  onclick="history.back()"
+                >
+                  Back
+                </button>
+              </form>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <div class="rheader">
+        <h3><b>Student Profile Details</b></h3>
+      </div>
+    </header>
+
+    <div class="profile-container">
+      <h2>Student Profile Details</h2>
+      <!-- Updated header -->
+
+      <!-- Personal Information Section -->
+      <div class="profile-section">
+        <h3>Personal Information</h3>
+        <div class="profile-details">
+          <p>
+            <strong>Admission Number:</strong> {{ profile_details.get('Admission
+            No', 0) | int }}
+          </p>
+
+          <p>
+            <strong>Roll Number:</strong> {{ profile_details.get('roll_number',
+            'N/A') }}
+          </p>
+          <p>
+            <strong> Passed Out Year:</strong>
+            {{ profile_details['Passed out year'] }}
+          </p>
+          <p>
+            <strong>Student Name:</strong> {{ profile_details['STUDENT NAME'] }}
+          </p>
+          <p><strong>Course:</strong> BE</p>
+          <p><strong>Branch:</strong> {{ profile_details['Branch'] }}</p>
+          <p><strong>Section:</strong> {{ profile_details['Section'] }}</p>
+          <p><strong>Rank:</strong> {{ profile_details['Rank'] }}</p>
+          <p><strong>Religion:</strong> {{ profile_details['RELIGION'] }}</p>
+          <p>
+            <strong>Seat Category:</strong> {{ profile_details['Joined By'] }}
+          </p>
+
+          <p>
+            <strong>Fee Reimbursement:</strong> {{ profile_details['Fee Reimb']
+            }}
+          </p>
+          <p>
+            <strong>Sub Caste:</strong>
+            {% if profile_details['Sub-Caste'] is none or
+            profile_details['Sub-Caste'] == 'nan' %} -- {% else %} {{
+            profile_details['Sub-Caste'] }} {% endif %}
+          </p>
+
+          <p>
+            <strong>Special Category:</strong>
+            {% if profile_details['Special Category (CAP/NCC)'] is none or
+            profile_details['Special Category (CAP/NCC)'] == 'nan' %} -- {% else
+            %} {{ profile_details['Special Category (CAP/NCC)'] }} {% endif %}
+          </p>
+
+          <p><strong>Gender:</strong> {{ profile_details['Sex'] }}</p>
+          <p>
+            <strong>Nationality:</strong> {{ profile_details['NATIONALITY'] }}
+          </p>
+          <p>
+            <strong>Date of Birth:</strong>
+            {% if profile_details['DATE OF BIRTH (MM/DD/YYYY)'] %} {{
+            profile_details['DATE OF BIRTH (MM/DD/YYYY)'].split(' ')[0] }} {%
+            else %} N/A {% endif %}
+          </p>
+
+          <p>
+            <strong>Aadhaar No:</strong> {{ profile_details['AADHAAR CARD NO'] |
+            replace('.', '') }}
+          </p>
+
+          <p>
+            <strong>Student Mobile:</strong> {{ profile_details['STUDENT
+            MOBILE'] }}
+          </p>
+          <p>
+            <strong>Email ID:</strong>
+            {% if profile_details['Email id'] is none or profile_details['Email
+            id'] == 'nan' %} -- {% else %} {{ profile_details['Email id'] }} {%
+            endif %}
+          </p>
+        </div>
+      </div>
+
+      <!-- Education Information Section -->
+      <div class="profile-section">
+        <h3>Education Information</h3>
+        <div class="profile-details">
+          <p>
+            <strong>Intermediate Year:</strong>
+            {{ profile_details['Inter Y.O.P']|int }}
+          </p>
+          <p>
+            <strong>Intermediate board:</strong>
+            {{ profile_details['Inter Board'] }}
+          </p>
+          <p>
+            <strong>Intermediate Marks:</strong>
+            {{ profile_details['Inter/ Diploma Marks']|int }}
+          </p>
+          <p>
+            <strong>Intermediate Total Marks:</strong>
+            {{ profile_details['Inter/ Diploma Max. Marks'] }}
+          </p>
+          <p>
+            <strong>Intermediate percentage:</strong>
+            {{ profile_details['Inter/ Diploma percentage']|int }}
+          </p>
+          <p>
+            <strong>SSC Year:</strong> {{ profile_details['SSC Y.O.P']|int }}
+          </p>
+          <p><strong>SSC board:</strong> {{ profile_details['SSC Board'] }}</p>
+          <p>
+            <strong>SSC Marks:</strong> {{ profile_details['SSC Marks']|int }}
+          </p>
+          <p>
+            <strong>SSC Total Marks:</strong>
+            {{ profile_details['SSC Max. Marks']|int }}
+          </p>
+          <p>
+            <strong>SSC percentage:</strong>
+            {{ profile_details['SSC Percentage']|int }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Parent Details Section -->
+      <div class="profile-section">
+        <h3>Parent Details</h3>
+        <div class="profile-details">
+          <p>
+            <strong>Father Name:</strong> {{ profile_details['FATHER NAME'] }}
+          </p>
+          <p>
+            <strong>Mother Name:</strong> {{ profile_details['MOTHER NAME'] }}
+          </p>
+          <p>
+            <strong>Father Mobile:</strong> {{ profile_details['FATHER MOBILE']
+            }}
+          </p>
+          <p>
+            <strong>Mother Mobile:</strong> {{ profile_details['MOTHER MOBILE']
+            }}
+          </p>
+          <p>
+            <strong>Permanent Address:</strong>
+            {{ profile_details['PERMANENT ADDRESS'] }}
+          </p>
+          <p>
+            <strong>Correspondence Address:</strong> {{
+            profile_details['CORRESPONDENCE ADDRESS'] }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Other Details Section -->
+      <div class="profile-section">
+        <h3>Other Information</h3>
+        <div class="profile-details">
+          <p>
+            <strong>Blood Group:</strong> {{ profile_details['BLOOD GROUP'] }}
+          </p>
+          <p>
+            <strong>Identification Marks 1:</strong> {{
+            profile_details['IDENTIFICATION MARKS-1'] }}
+          </p>
+          <p>
+            <strong>Identification Marks 2:</strong> {{
+            profile_details['IDENTIFICATION MARKS-2'] }}
+          </p>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <p>Footer content here. &copy; 2025</p>
+    </footer>
+  </body>
+
+  <script>
+    function redirectBasedOnRole() {
+      // Fetch the user's role from session storage, local storage, or a hidden input field
+      let userRole = "{{ session['role'] }}"; // Ensure role is passed from Flask
+
+      if (userRole === "super_admin") {
+        window.location.href = "http://127.0.0.1:5000/admin_student";
+      } else if (userRole === "hod") {
+        window.location.href = "http://127.0.0.1:5000/hod";
+      } else {
+        alert("Unauthorized role!"); // Optional error handling
+      }
+    }
+    function toggleDropdown() {
+      document.getElementById("dropdown").classList.toggle("show");
+    }
+
+    window.onclick = function (event) {
+      if (!event.target.matches(".menu-icon")) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        for (var i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains("show")) {
+            openDropdown.classList.remove("show");
+          }
+        }
+      }
+    };
+  </script>
+</html>

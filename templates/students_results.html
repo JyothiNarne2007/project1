@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Student Results</title>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        margin-top: 200px;
+      }
+
+      form input,
+      form select,
+      form button {
+        padding: 1px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+      }
+
+      #alertBox {
+        padding: 10px;
+        margin: 10px 0;
+        color: white;
+        text-align: center;
+        display: none;
+      }
+      #alertBox.success {
+        background-color: #4caf50;
+      }
+      #alertBox.error {
+        background-color: #f44336;
+      }
+      input[type="number"]::-webkit-inner-spin-button,
+      input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      input[type="number"] {
+        -moz-appearance: textfield; /* For Firefox */
+        appearance: textfield; /* For modern browsers */
+      }
+
+      /* Error and Success Messages */
+      .message {
+        padding: 15px;
+        margin: 20px auto;
+        width: 80%;
+        border-radius: 5px;
+        font-weight: bold;
+        text-align: center;
+        font-size: 16px;
+      }
+      .error {
+        background-color: #f8d7da;
+        color: #842029;
+        border: 1px solid #f5c2c7;
+      }
+      .success {
+        background-color: #d1e7dd;
+        color: #0f5132;
+        border: 1px solid #badbcc;
+      }
+
+      /* Table Styling */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px auto;
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      table,
+      th,
+      td {
+        border: 1px solid #ddd;
+      }
+      th,
+      td {
+        padding: 12px;
+        text-align: center;
+        font-size: 14px;
+      }
+      th {
+        background-color: #8b1b29;
+        color: white;
+      }
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+      tr:nth-child(odd) {
+        background-color: #e9ecef;
+      }
+      tr:hover {
+        background-color: #d1e7dd;
+      }
+
+      /* Form Styling */
+      form {
+        margin: 0 auto;
+        width: 90%;
+      }
+
+      .welcome-text {
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+        font-size: 18px;
+        margin: 0; /* Remove any default margins */
+        white-space: nowrap; /* Prevent the text from breaking into multiple lines */
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-content">
+        <div class="white-header">
+          <img src="/static/logo.png" alt="Alverno College Logo" class="logo" />
+          <h2>
+            <b>GOKARAJU LAILAVATHI<br />ENGINEERING COLLEGE</b>
+          </h2>
+        </div>
+        <div class="header-text">
+          <div class="red-header"></div>
+          <div class="green-header">
+            <nav>
+              {% if session['faculty_name'] %}
+              <span class="welcome-text"
+                >Welcome, {{ session['faculty_name'] }}
+              </span>
+              {% endif %}
+
+              <form style="display: inline">
+                <button
+                  type="button"
+                  class="apply-now"
+                  onclick="history.back()"
+                >
+                  Back
+                </button>
+              </form>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <div class="rheader">
+        <h3>
+          <b
+            >Students in Year {{ passed_out_year }}, Branch {{ branch }},
+            Section {{ section }}</b
+          >
+        </h3>
+      </div>
+    </header>
+
+    <form id="marksForm" action="{{ url_for('submit_marks') }}" method="POST">
+      <table border="1">
+        <thead>
+          <tr>
+            <th>Roll Number</th>
+            <th>Student Name</th>
+            <th>CIE-I (Max 20)</th>
+            <th>CIE-II (Max 20)</th>
+            <th>Assignment (Max 10)</th>
+            <th>Average (Max 20)</th>
+            <th>Total (Max 30)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for student in students %}
+          <tr>
+            <td>{{ student['roll_number'] }}</td>
+            <td style="text-align: left">
+              {{ student['STUDENT NAME'] if student['STUDENT NAME'] else "N/A"
+              }}
+            </td>
+
+            <td>
+              <input type="number" name="cie1_{{ student['roll_number'] }}"
+              min="0" max="20" class="cie1" value="{{
+              marks_dict.get(student['roll_number'], {}).get('cie1', '') }}" {%
+              if access_dict.get('CIE1') != 'ON' %} readonly {% endif %}>
+            </td>
+            <td>
+              <input type="number" name="cie2_{{ student['roll_number'] }}"
+              min="0" max="20" class="cie2" value="{{
+              marks_dict.get(student['roll_number'], {}).get('cie2', '') }}" {%
+              if access_dict.get('CIE2') != 'ON' %} readonly {% endif %}>
+            </td>
+            <td>
+              <input type="number" name="assignment_{{ student['roll_number']
+              }}" min="0" max="10" class="assignment" value="{{
+              marks_dict.get(student['roll_number'], {}).get('assignment', '')
+              }}" {% if access_dict.get('Assignment') != 'ON' %} readonly {%
+              endif %}>
+            </td>
+            <td>
+              <input
+                type="text"
+                name="avg_{{ student['roll_number'] }}"
+                value="{{ marks_dict.get(student['roll_number'], {}).get('avg', '') }}"
+                readonly
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                name="total_{{ student['roll_number'] }}"
+                value="{{ marks_dict.get(student['roll_number'], {}).get('total', '') }}"
+                readonly
+              />
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <input type="hidden" name="subject_code" value="{{ subject_code }}" />
+      <input type="hidden" name="subject_name" value="{{ subject_name }}" />
+      <input
+        type="hidden"
+        name="passed_out_year"
+        value="{{ passed_out_year }}"
+      />
+      <input type="hidden" name="semester" value="{{ semester }}" />
+      <div
+        style="
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 20px;
+          margin-top: 20px;
+        "
+      >
+        <!-- Submit button -->
+        <button
+          type="submit"
+          name="action"
+          value="submit"
+          style="
+            width: 25%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: bold;
+            color: #ffffff;
+            background-color: #842029;
+            text-align: center;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+          "
+        >
+          Submit Marks
+        </button>
+        <button
+          type="submit"
+          name="action"
+          value="download"
+          style="
+            width: 25%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: bold;
+            color: #ffffff;
+            background-color: #842029;
+            text-align: center;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+          "
+        >
+          Download Excel
+        </button>
+      </div>
+    </form>
+
+    <div id="alertBox" class="">
+      <span id="alertMessage"></span>
+    </div>
+    <footer>
+      <p>© Copyright 2025 - All Rights Reserved www.glwec.in</p>
+    </footer>
+    <script>
+      // Navigation between rows with Up and Down Arrow keys
+      document.addEventListener("keydown", function (event) {
+        const activeElement = document.activeElement;
+
+        // Check if the active element is an input of type 'number'
+        if (
+          activeElement.tagName === "INPUT" &&
+          activeElement.type === "number"
+        ) {
+          const row = activeElement.closest("tr");
+          const allRows = Array.from(document.querySelectorAll("tbody tr")); // All rows in the table
+          const currentIndex = allRows.indexOf(row); // Get the index of the current row
+          const columnIndex = Array.from(
+            row.querySelectorAll('input[type="number"]')
+          ).indexOf(activeElement); // Get the index of the current column
+          const lastRow = allRows[allRows.length - 1]; // Get the last row
+          const firstRow = allRows[0]; // Get the first row
+
+          // Handle 'down' arrow key
+          if (event.key === "ArrowDown") {
+            // If we're on the last row, prevent the default behavior (do nothing)
+            if (row === lastRow) {
+              event.preventDefault(); // Prevent default behavior (changing values)
+            } else {
+              // Otherwise, move to the next row's input field in the same column
+              const nextRow = allRows[currentIndex + 1];
+              const nextInput = nextRow.querySelectorAll(
+                'input[type="number"]'
+              )[columnIndex];
+              if (nextInput) {
+                nextInput.focus(); // Focus the next row's input in the same column
+              }
+              event.preventDefault(); // Prevent the value from changing
+            }
+          }
+
+          // Handle 'up' arrow key
+          else if (event.key === "ArrowUp") {
+            // If we're on the first row, prevent the default behavior (do nothing)
+            if (row === firstRow) {
+              event.preventDefault(); // Prevent default behavior (changing values)
+            } else {
+              // Otherwise, move to the previous row's input field in the same column
+              const prevRow = allRows[currentIndex - 1];
+              const prevInput = prevRow.querySelectorAll(
+                'input[type="number"]'
+              )[columnIndex];
+              if (prevInput) {
+                prevInput.focus(); // Focus the previous row's input in the same column
+              }
+              event.preventDefault(); // Prevent the value from changing
+            }
+          }
+        }
+      });
+
+      // Prevent value change during focus navigation
+      document.querySelectorAll('input[type="number"]').forEach((input) => {
+        // Store the initial value on focus
+        input.addEventListener("focus", function (event) {
+          // Store the current value in a data attribute
+          event.target.setAttribute("data-prev-value", event.target.value);
+        });
+
+        // When user types, update the stored value
+        input.addEventListener("input", function (event) {
+          event.target.setAttribute("data-prev-value", event.target.value);
+        });
+
+        // When the input loses focus, restore the previous value if not manually edited
+        input.addEventListener("blur", function (event) {
+          const prevValue = event.target.getAttribute("data-prev-value");
+          if (event.target.value !== prevValue) {
+            // If the user manually changed the value, update the prev-value attribute
+            event.target.setAttribute("data-prev-value", event.target.value);
+          } else {
+            // If no changes were made, restore the previous value
+            event.target.value = prevValue;
+          }
+        });
+      });
+      // Script for calculating the average and total
+      document
+        .querySelectorAll('input[type="number"]')
+        .forEach(function (input) {
+          input.addEventListener("input", function () {
+            var row = input.closest("tr");
+            var cie1 =
+              parseInt(row.querySelector('input[name^="cie1"]').value) || 0;
+            var cie2 =
+              parseInt(row.querySelector('input[name^="cie2"]').value) || 0;
+            var assignment =
+              parseInt(row.querySelector('input[name^="assignment"]').value) ||
+              0;
+
+            // Calculate the average as (CIE-I + CIE-II) / 2
+            var avg = (cie1 + cie2) / 2;
+
+            // Calculate total as average + assignment
+            var total = avg + assignment;
+
+            // Update the fields for average and total
+            row.querySelector('input[name^="avg"]').value = avg.toFixed(2); // Limiting to 2 decimal places
+            row.querySelector('input[name^="total"]').value = total.toFixed(2); // Limiting to 2 decimal places
+          });
+        });
+
+      document
+        .getElementById("marksForm")
+        .addEventListener("submit", function (event) {
+          var isValid = true;
+          var alertBox = document.getElementById("alertBox");
+          var alertMessage = document.getElementById("alertMessage");
+          var messages = [];
+
+          document.querySelectorAll("tr").forEach(function (row) {
+            var cie1Input = row.querySelector('input[name^="cie1"]');
+            var cie2Input = row.querySelector('input[name^="cie2"]');
+            var assignmentInput = row.querySelector(
+              'input[name^="assignment"]'
+            );
+
+            // Check if fields are required and not empty
+            if (
+              cie1Input &&
+              cie1Input.hasAttribute("readonly") === false &&
+              cie1Input.value === ""
+            ) {
+              isValid = false;
+              messages.push(
+                "CIE-I field cannot be empty for Roll Number " +
+                  row.querySelector("td").innerText
+              );
+            }
+            if (
+              cie2Input &&
+              cie2Input.hasAttribute("readonly") === false &&
+              cie2Input.value === ""
+            ) {
+              isValid = false;
+              messages.push(
+                "CIE-II field cannot be empty for Roll Number " +
+                  row.querySelector("td").innerText
+              );
+            }
+            if (
+              assignmentInput &&
+              assignmentInput.hasAttribute("readonly") === false &&
+              assignmentInput.value === ""
+            ) {
+              isValid = false;
+              messages.push(
+                "Assignment field cannot be empty for Roll Number " +
+                  row.querySelector("td").innerText
+              );
+            }
+          });
+
+          // If there are validation errors, show them in the alert box
+          if (!isValid) {
+            event.preventDefault(); // Prevent form submission
+            alertBox.className = "error";
+            alertMessage.innerHTML = messages.join("<br>"); // Display all error messages in the alert box
+            alertBox.style.display = "block";
+          } else {
+            // Clear the alert box if the form is valid
+            alertBox.style.display = "none";
+          }
+        });
+    </script>
+  </body>
+</html>

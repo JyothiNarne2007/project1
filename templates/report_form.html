@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Form</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Fetch data from the Flask route
+            $.get("/get_dropdown_data", function(data) {
+                console.log(data);  // Log the response data to check if it's correct
+
+                // Populate Passed Out Year dropdown
+                let passedOutYearSelect = $("#passed_out_year");
+                data.passed_out_years.forEach(function(year) {
+                    passedOutYearSelect.append(new Option(year, year));
+                });
+
+                // Populate Semester dropdown
+                let semesterSelect = $("#semester");
+                data.semesters.forEach(function(semester) {
+                    semesterSelect.append(new Option("Semester " + semester, semester));
+                });
+
+                // Populate Branch dropdown
+                let branchSelect = $("#branch");
+                data.branches.forEach(function(branch) {
+                    branchSelect.append(new Option(branch, branch));
+                });
+
+                // Populate Section dropdown
+                let sectionSelect = $("#section");
+                data.sections.forEach(function(section) {
+                    sectionSelect.append(new Option(section, section));
+                });
+
+                // Populate Subject dropdown
+                let subjectSelect = $("#subject");
+                data.subjects.forEach(function(subject) {
+                    subjectSelect.append(new Option(subject.subject_name, subject.subject_code));
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Report Form</h1>
+    <form action="/submit_report" method="POST">
+        <label for="passed_out_year">Passed Out Year:</label>
+        <select id="passed_out_year" name="passed_out_year">
+            <option value="none">None</option>
+        </select><br><br>
+
+        <label for="semester">Semester:</label>
+        <select id="semester" name="semester">
+            <option value="none">None</option>
+        </select><br><br>
+
+        <label for="branch">Branch:</label>
+        <select id="branch" name="branch">
+            <option value="none">None</option>
+        </select><br><br>
+
+        <label for="section">Section:</label>
+        <select id="section" name="section">
+            <option value="none">None</option>
+        </select><br><br>
+
+        <label for="subject">Subject:</label>
+        <select id="subject" name="subject">
+            <option value="none">None</option>
+        </select><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
